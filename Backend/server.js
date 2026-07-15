@@ -5,6 +5,7 @@ import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.Routes.js";
 import cartRoutes from "./routes/cart.Routes.js";
 import productRoutes from "./routes/product.Routes.js";
+import couponRoutes from "./routes/coupon.Routes.js"
 dotenv.config();
 connectDB();
 

@@ -1,4 +1,4 @@
-import Coupon from "../model/coupon.model";
+import Coupon from "../model/coupon.model.js";
 
 // get coupon
 export const getCoupon = async (req, res) => {
