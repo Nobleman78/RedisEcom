@@ -4,8 +4,9 @@ import express from "express";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.Routes.js";
 import cartRoutes from "./routes/cart.Routes.js";
+import couponRoutes from "./routes/coupon.Routes.js";
+import paymentRoutes from "./routes/payment.Routes.js";
 import productRoutes from "./routes/product.Routes.js";
-import couponRoutes from "./routes/coupon.Routes.js"
 dotenv.config();
 connectDB();
 
@@ -18,7 +19,8 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/coupons",couponRoutes)
+app.use("/api/coupons", couponRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

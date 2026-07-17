@@ -1,5 +1,6 @@
 import { stripe } from "../lib/stripe";
 import Coupon from "../model/coupon.model";
+import Order from "../model/order.model";
 
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -91,4 +92,46 @@ async function createNewCoupon(userId) {
 
 // checkout success route
 
-export const checkoutSucess = async (req, res) => {};
+export const checkoutSucess = async (req, res) => {
+  try {
+    // I need sessionId
+    const { sessionId } = req.body;
+    const season = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (season.payment_status === "paid") {
+      if (season.metadata.couponCode) {
+        await Coupon.findOneAndUpdate(
+          {
+            code: season.metadata.couponCode,
+            userId: session.metadata.userId,
+          },
+          {
+            isActive: false,
+          },
+        );
+      }
+
+      // create a new order
+      const products = JSON.parse(session.metadata.products);
+      const newOrder = new Order({
+        user: session.metadata.userId,
+        products: products.map((product) => ({
+          product: product.id,
+          quantity: product.quantity,
+          price: product.price,
+        })),
+        totalAmount: session.amount_total / 100,
+        stripeSessionId: sessionId,
+      });
+      await newOrder.save();
+      res.status(200).json({
+        success: true,
+        message:
+          "Payment successfull, order created and coupon deactivated if used.",
+        orderId: newOrder._id,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
