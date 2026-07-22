@@ -1,4 +1,5 @@
-import { Michroma, Space_Mono } from "next/font/google";
+import { Michroma, Roboto, Space_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 export const michroma = Michroma({
   subsets: ["latin"],
@@ -10,3 +11,18 @@ export const spaceMono = Space_Mono({
   weight: "400",
 });
 
+export const roboto = Roboto({
+  subsets:["latin"],
+  weight:"900"
+})
+export const Nimbus = localFont({
+  src: [
+    {
+      path: "./Nimbus.ttf",
+      weight: "900",
+      style: "bold",
+    },
+  ],
+  display: "swap",
+  fallback: ["sans-serif"],
+});
