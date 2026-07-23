@@ -1,8 +1,30 @@
 import Product from "../model/product.model.js";
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.status(200).json({ products });
+    const { search = "", category, page = 1, limit = 20 } = req.query;
+    const filter = {};
+    if (search) {
+      const safe = escapeRegex(search);
+      filter.$or = [
+        { name: { $regex: safe, $options: "i" } },
+        { description: { $regex: safe, $options: "i" } },
+      ];
+    }
+    if (category) {
+      filter.category = category;
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const [products, total] = await Promise.all([
+      Product.find(filter).skip(skip).limit(Number(limit)),
+      Product.countDocuments(filter),
+    ]);
+    res.status(200).json({
+      products,
+      total,
+      page: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -69,7 +91,7 @@ export const deleteProduct = async (req, res) => {
         });
       }
     }
-    await product.findByIdAndDelete(req.params.id);
+    await Product.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
