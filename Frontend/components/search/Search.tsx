@@ -1,7 +1,9 @@
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { searchProducts } from "../../feature/product/productApi";
+import { demoProducts } from "../../public/DemoProducts/demoproducts";
 
 interface Product {
   _id: string;
@@ -24,27 +26,54 @@ const Search: React.FC = () => {
     undefined,
   );
 
-  const runSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setProducts([]);
-      setHasSearched(false);
-      setError("");
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const data = await searchProducts({ search: query, page: 1 });
-      setProducts(data.products ?? []);
-      setHasSearched(true);
-    } catch {
-      setError("Could not load results. Try again.");
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
+  const getDemoResults = useCallback((query: string): Product[] => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return [];
+
+    return demoProducts.filter((product) => {
+      const haystack = [
+        product.name,
+        product.description,
+        product.category ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(normalizedQuery);
+    }) as Product[];
   }, []);
+
+  const runSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        return;
+      }
+
+      try {
+        const data = await searchProducts({
+          search: query,
+          page: 1,
+        });
+
+        setProducts(data.products ?? []);
+        setHasSearched(true);
+        setError("");
+      } catch {
+        const fallbackResults = getDemoResults(query);
+
+        setProducts(fallbackResults);
+        setHasSearched(true);
+
+        if (fallbackResults.length === 0) {
+          setError("Could not load results. Showing demo products instead.");
+        } else {
+          setError("");
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [getDemoResults],
+  );
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
@@ -55,37 +84,95 @@ const Search: React.FC = () => {
   return (
     <div className="w-full">
       <input
-        type="search"
+        type="text"
         value={term}
-        onChange={(e) => setTerm(e.target.value)}
-        placeholder="Search products…"
+        onChange={(e) => {
+          const value = e.target.value;
+          setTerm(value);
+
+          if (!value.trim()) {
+            setProducts([]);
+            setHasSearched(false);
+            setLoading(false);
+            setError("");
+          } else {
+            setLoading(true);
+            setHasSearched(false);
+            setError("");
+          }
+        }}
+        placeholder="Search products..."
         aria-label="Search products"
-        className={`w-full  px-4 py-3 text-white outline-none ${spaceMono.className}`}
+        className={`w-full px-4 py-3 text-white outline-none ${spaceMono.className}`}
       />
 
-      {error && (
-        <div
-          className={`absolute bg-black top-[90px] py-10 w-full inset-0 text-center ${spaceMono.className}`}
-        >
-          {loading && <p>Searching…</p>}
-          {error && <p>{error}</p>}
-          {hasSearched && !loading && !error && products.length === 0 && (
-            <p>No products match “{term}”.</p>
-          )}
-        </div>
-      )}
 
-      <ul className="search__results">
-        {products.map((p) => (
-          <li key={p._id}>
-            {p.image && <Image src={p.image} alt="" />}
-            <div>
-              <span>{p.name}</span>
-              <span>${p.price}</span>
+      {/* Search Results */}
+      {term.trim() && (
+        <>
+          {/* Loading */}
+          {loading && (
+            <div
+              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+            >
+              <p className="text-white">Searching...</p>
             </div>
-          </li>
-        ))}
-      </ul>
+          )}
+
+          {/* Error */}
+          {!loading && error && (
+            <div
+              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+            >
+              <p className="text-white">{error}</p>
+            </div>
+          )}
+
+          {/* No products */}
+          {!loading && hasSearched && !error && products.length === 0 && (
+            <div
+              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+            >
+              <p className="text-white">No products match</p>
+            </div>
+          )}
+
+          {/* Products */}
+          {!loading && hasSearched && !error && products.length > 0 && (
+            <div className="absolute top-24 left-0 right-0 bg-black h-[500px] z-10 overflow-y-auto overscroll-contain">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-5 mx-4 sm:mx-8 lg:mx-15 pt-6">
+                {products.slice(0, 8).map((p) => (
+                  <Link href="" key={p._id}>
+                    <Image
+                      src={p.image}
+                      alt={p.name}
+                      width={600}
+                      height={400}
+                      className="w-full h-auto"
+                    />
+
+                    <div
+                      className={`${spaceMono.className} flex flex-col mt-5`}
+                    >
+                      <span>{p.name}</span>
+                      <span>${p.price}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="flex justify-center mt-10 pb-6">
+                <Link
+                  href="/collections/products"
+                  className={`${spaceMono.className} bg-white text-black px-5 py-2`}
+                >
+                  Show all products
+                </Link>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

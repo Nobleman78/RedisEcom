@@ -74,6 +74,10 @@ const Navbar = () => {
         "Underwear",
       ],
     },
+    {
+      label: "Collections",
+      href:"/collections"
+    }
   ];
   const menuItemsTwo = [
     {

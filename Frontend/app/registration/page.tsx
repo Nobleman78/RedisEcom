@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { michroma, spaceMono } from "@/fonts/Fonts";
 import Link from "next/link";
 
@@ -11,8 +11,10 @@ const page = () => {
       <div
         className={`${michroma.className} cursor-pointer text-3xl text-center my-10`}
       >
-        <h2>NEVER</h2>
-        <h2>NEVER</h2>
+        <Link href="/">
+          <h2>NEVER</h2>
+          <h2>NEVER</h2>
+        </Link>
       </div>
 
       {/* Sign in or create account */}
