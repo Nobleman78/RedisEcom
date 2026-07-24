@@ -26,6 +26,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isDiscount:{
+      type:Number,
+      default: 0
+    }
   },
   { timestamps: true },
 );
