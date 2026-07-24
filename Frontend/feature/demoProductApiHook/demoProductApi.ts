@@ -14,7 +14,7 @@ export function demoProductApi(filters:ProductFilters={}){
         products = products.filter((item)=>item._id === filters.id)
     }
     if(filters.category){
-        products = products.filter((item)=>item.category === filters.category)
+        products = products.filter((item)=>item.category.toLowerCase() === filters.category)
     }
     if(filters.discount){
         products = products.filter((item)=>item.isDiscount === filters.discount)

@@ -106,7 +106,6 @@ const Search: React.FC = () => {
         className={`w-full px-4 py-3 text-white outline-none ${spaceMono.className}`}
       />
 
-
       {/* Search Results */}
       {term.trim() && (
         <>
@@ -161,14 +160,16 @@ const Search: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex justify-center mt-10 pb-6">
-                <Link
-                  href="/collections/products"
-                  className={`${spaceMono.className} bg-white text-black px-5 py-2`}
-                >
-                  Show all products
-                </Link>
-              </div>
+              {products.length > 8 && (
+                <div className="flex justify-center mt-10 pb-6">
+                  <Link
+                    href="/collections/products"
+                    className={`${spaceMono.className} bg-white text-black px-5 py-2`}
+                  >
+                    Show all products
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </>
