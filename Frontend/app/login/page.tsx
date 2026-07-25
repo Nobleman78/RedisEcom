@@ -7,8 +7,10 @@ const page = () => {
       <div
         className={`${michroma.className} cursor-pointer text-3xl text-center my-10`}
       >
-        <h2>NEVER</h2>
-        <h2>NEVER</h2>
+        <Link href="/">
+          <h2>NEVER</h2>
+          <h2>NEVER</h2>
+        </Link>
       </div>
 
       {/* Sign in or create account */}
@@ -26,8 +28,13 @@ const page = () => {
             placeholder="password"
             className={`w-full px-5 py-2 border outline-none ${spaceMono.className}`}
           />
+          <button
+            className={`${spaceMono.className} flex flex-row border w-full  justify-center py-3 bg-black text-white cursor-pointer`}
+          >
+            Login
+          </button>
         </form>
-      
+
         <h2 className={`${spaceMono.className} text-center`}> Or</h2>
 
         <button

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import Navbar from "@/components/nav/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,12 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={` h-full  antialiased`}
-    >
+    <html lang="en" className={` h-full  antialiased`}>
       <body className="min-h-full flex flex-col">
-      {children}
+        <section>
+          <Navbar />
+        </section>
+        {children}
       </body>
     </html>
   );
