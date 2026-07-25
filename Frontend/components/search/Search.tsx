@@ -45,12 +45,12 @@ const Search: React.FC = () => {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => runSearch(term), 300);
-    return () => clearTimeout(debounceRef.current);
-  }, [term, runSearch]);
+  
+  useEffect(()=>{
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(()=> runSearch(term),300)
+    return ()=> clearTimeout(debounceRef.current)
+  },[term,runSearch])
 
   return (
     <div className="w-full">
