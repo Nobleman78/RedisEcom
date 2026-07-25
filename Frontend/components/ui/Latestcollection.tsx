@@ -86,7 +86,7 @@ const Latestcollection = () => {
             return (
               <div
                 key={actualIndex}
-                className="w-[calc(25%-30px)] flex-shrink-0"
+                className="w-[calc(25%-30px)] shrink-0"
               >
                 <Link
                   href={`/latestcollections/${item.title

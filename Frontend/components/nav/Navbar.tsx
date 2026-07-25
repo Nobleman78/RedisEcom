@@ -130,11 +130,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 z-[100] w-full bg-black text-white shadow-sm">
+    <div className="fixed left-0 top-0 z-100 w-full bg-black text-white shadow-sm">
       <div className="flex flex-col items-center justify-center">
         <button className="group  mt-5 cursor-pointer text-center text-xs italic">
           <span className="block">SUMMER SALE - NOW UP TO 50% OFF</span>
-          <span className="mt-1 block h-[1px] w-full overflow-hidden">
+          <span className="mt-1 block h-px w-full overflow-hidden">
             <span className="block h-full w-full bg-white transition-all duration-500 group-hover:w-0" />
           </span>
         </button>
@@ -199,7 +199,7 @@ const Navbar = () => {
       />
 
       {isSearchOpen && (
-        <div className="fixed inset-x-0 top-[110px] z-50 mx-auto w-full bg-black  border-t border-gray-500 ">
+        <div className="fixed inset-x-0 top-27.5 z-50 mx-auto w-full bg-black  border-t border-gray-500 ">
           <div className=" flex flex-row items-center p-6 shadow-2xl gap-10 mx-5">
             <FaSearch size={20} />
             <Search />
@@ -232,7 +232,7 @@ const Navbar = () => {
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpenMenubar(false)}
-                className={`${Nimbus.className} rounded-md px-2 py-3 text-3xl uppercase tracking-[0.1em] transition-all duration-500 ease-out hover:text-gray-400 ${
+                className={`${Nimbus.className} rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
                   isOpenMenubar
                     ? "translate-y-0 opacity-100"
                     : "pointer-events-none translate-y-3 opacity-0"
@@ -245,7 +245,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => toggleDropdown(item.label)}
-                  className={`${Nimbus.className} cursor-pointer w-full text-left rounded-md px-2 py-3 text-3xl uppercase tracking-[0.1em] transition-all duration-500 ease-out hover:text-gray-400 ${
+                  className={`${Nimbus.className} cursor-pointer w-full text-left rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
                     isOpenMenubar
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none translate-y-3 opacity-0"
@@ -264,7 +264,7 @@ const Navbar = () => {
               key={item.label}
               href={item.href}
               onClick={() => setIsOpenMenubar(false)}
-              className={`${Nimbus.className} rounded px-2 p-3 text-3xl tracking-[0.1em] transition-all duration-500 ease-out hover:text-gray-400 ${
+              className={`${Nimbus.className} rounded px-2 p-3 text-3xl tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
                 isOpenMenubar
                   ? "translate-y-0 opacity-100"
                   : "pointer-events-none translate-y-3 opacity-0"
@@ -277,7 +277,7 @@ const Navbar = () => {
 
         {/* dropdown menu */}
         {activeDropdown && (
-          <div className="absolute left-full top-0 z-50 flex h-full w-[420px] flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
+          <div className="absolute left-full top-0 z-50 flex h-full w-105 flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
             <div className="grid gap-4 text-2xl font-semibold uppercase text-white">
               {menuItemsOne
                 .find((item) => item.label === activeDropdown)

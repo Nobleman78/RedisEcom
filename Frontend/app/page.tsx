@@ -1,3 +1,4 @@
+import Modal from "@/components/emailmodal/Modal";
 import Banner from "@/components/ui/Banner";
 import Discount from "@/components/ui/Discount";
 import Follow from "@/components/ui/Follow";
@@ -8,6 +9,7 @@ import Shirtvariation from "@/components/ui/Shirtvariation";
 export default function Home() {
   return (
     <div className="pt-30">
+      <Modal />
       <section>
         <Discount />
       </section>

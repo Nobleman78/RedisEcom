@@ -112,7 +112,7 @@ const Search: React.FC = () => {
           {/* Loading */}
           {loading && (
             <div
-              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+              className={`absolute top-24 left-0 right-0 bg-black h-100 flex items-center justify-center z-20 ${spaceMono.className}`}
             >
               <p className="text-white">Searching...</p>
             </div>
@@ -121,7 +121,7 @@ const Search: React.FC = () => {
           {/* Error */}
           {!loading && error && (
             <div
-              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+              className={`absolute top-24 left-0 right-0 bg-black h-100 flex items-center justify-center z-20 ${spaceMono.className}`}
             >
               <p className="text-white">{error}</p>
             </div>
@@ -130,7 +130,7 @@ const Search: React.FC = () => {
           {/* No products */}
           {!loading && hasSearched && !error && products.length === 0 && (
             <div
-              className={`absolute top-24 left-0 right-0 bg-black h-[400px] flex items-center justify-center z-20 ${spaceMono.className}`}
+              className={`absolute top-24 left-0 right-0 bg-black h-100 flex items-center justify-center z-20 ${spaceMono.className}`}
             >
               <p className="text-white">No products match</p>
             </div>
@@ -138,7 +138,7 @@ const Search: React.FC = () => {
 
           {/* Products */}
           {!loading && hasSearched && !error && products.length > 0 && (
-            <div className="absolute top-24 left-0 right-0 bg-black h-[500px] z-10 overflow-y-auto overscroll-contain">
+            <div className="absolute top-24 left-0 right-0 bg-black h-125 z-10 overflow-y-auto overscroll-contain">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-5 mx-4 sm:mx-8 lg:mx-15 pt-6">
                 {products.slice(0, 8).map((p) => (
                   <Link href="" key={p._id}>
