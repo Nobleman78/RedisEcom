@@ -5,6 +5,7 @@ interface ProductFilters {
   category?: string;
   discount?: number;
   featured?: boolean;
+  slogan?: string;
 }
 
 export function demoProductApi(filters:ProductFilters={}){
@@ -28,4 +29,7 @@ export function demoProductApi(filters:ProductFilters={}){
 // Function for to get all category 
 export function getCategories() {
   return [...new Set(demoProducts.map((product)=>product.category))]
+}
+export function getSlogan(){
+    return [...new Set(demoProducts.map((product)=>product.slogan))]
 }

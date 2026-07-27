@@ -9,6 +9,7 @@ export const demoProducts = [
     category: "Clothing",
     isFeatured: true,
     isDiscount: 70,
+    slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "2",
@@ -19,7 +20,32 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=2",
     category: "Clothing",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+  slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
+  },
+  {
+    _id: "16",
+    name: "Shirt for men",
+    price: 49.99,
+    description:
+      "Slim-fit denim jeans made with premium stretch fabric for comfort.",
+    image: "https://picsum.photos/400/400?random=8",
+    category: "Clothing",
+    isFeatured: false,
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
+  },
+  {
+    _id: "17",
+    name: "Shirt for women",
+    price: 49.99,
+    description:
+      "Slim-fit denim jeans made with premium stretch fabric for comfort.",
+    image: "https://picsum.photos/400/400?random=19",
+    category: "Clothing",
+    isFeatured: false,
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "3",
@@ -30,7 +56,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=3",
     category: "Footwear",
     isFeatured: true,
-    isDiscount:60
+    isDiscount:60,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "4",
@@ -41,7 +68,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=4",
     category: "Accessories",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "5",
@@ -52,7 +80,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=5",
     category: "Electronics",
     isFeatured: true,
-    isDiscount:50
+    isDiscount:50,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "6",
@@ -63,7 +92,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=6",
     category: "Electronics",
     isFeatured: true,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "7",
@@ -74,7 +104,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=7",
     category: "Bags",
     isFeatured: false,
-    isDiscount:50
+    isDiscount:50,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "8",
@@ -85,7 +116,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=8",
     category: "Home",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "9",
@@ -96,7 +128,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=9",
     category: "Electronics",
     isFeatured: true,
-    isDiscount:"40%"
+    isDiscount:"40%",
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "10",
@@ -107,7 +140,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=10",
     category: "Accessories",
     isFeatured: false,
-    isDiscount:40
+    isDiscount:40,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "11",
@@ -118,7 +152,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=11",
     category: "Electronics",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "12",
@@ -129,7 +164,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=12",
     category: "Furniture",
     isFeatured: true,
-    isDiscount:60
+    isDiscount:60,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "13",
@@ -140,7 +176,9 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=13",
     category: "Fitness",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
+
   },
   {
     _id: "14",
@@ -151,7 +189,8 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=14",
     category: "Lifestyle",
     isFeatured: false,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
   {
     _id: "15",
@@ -162,6 +201,7 @@ export const demoProducts = [
     image: "https://picsum.photos/400/400?random=15",
     category: "Electronics",
     isFeatured: true,
-    isDiscount:70
+    isDiscount:70,
+      slogan:"was originally founded in Seattle and is now based in Tokyo, Japan. Its recent reincarnationwas founded by Makoto of the famed Lost Hills store in Harajuku."
   },
 ];

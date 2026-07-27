@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const Modal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const sessionKey = "newsletterModalSeen";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -26,8 +27,10 @@ const Modal = () => {
 
   useEffect(() => {
     const subscribed = localStorage.getItem("newslaterSubscribed");
+    const seen = sessionStorage.getItem(sessionKey);
 
-    if (!subscribed) {
+    if (!subscribed && !seen) {
+      sessionStorage.setItem(sessionKey, "true");
       const timer = setTimeout(() => {
         setIsModalOpen(true);
       }, 5000);

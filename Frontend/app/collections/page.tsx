@@ -1,5 +1,5 @@
-import { getCategories } from "@/feature/demoProductApiHook/demoProductApi";
 import { spaceMono } from "@/fonts/Fonts";
+import { getCategories } from "@/hook/demoProductApiHook/demoProductApi";
 import Link from "next/link";
 
 const page = () => {

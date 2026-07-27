@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import Modal from "@/components/emailmodal/Modal";
 import Navbar from "@/components/nav/Navbar";
 import "./globals.css";
 
@@ -18,6 +19,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <section>
           <Navbar />
+        </section>
+        <section>
+          <Modal />
         </section>
         {children}
       </body>
