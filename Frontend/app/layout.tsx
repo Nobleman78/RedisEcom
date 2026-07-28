@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import Modal from "@/components/emailmodal/Modal";
 import Navbar from "@/components/nav/Navbar";
+import Follow from "@/components/ui/Follow";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,15 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={` h-full  antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <section>
-          <Navbar />
-        </section>
-        <section>
-          <Modal />
-        </section>
-        {children}
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-screen flex flex-col">
+        <Navbar />
+        <Modal />
+
+        <main className="flex-grow">{children}</main>
+
+        <Follow />
       </body>
     </html>
   );

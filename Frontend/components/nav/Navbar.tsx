@@ -82,7 +82,7 @@ const Navbar = () => {
   const menuItemsTwo = [
     {
       label: "SALE",
-      href: "/sale",
+      href: "/collections/sale",
     },
     { label: "BLOG", href: "/blog" },
     { label: "CONTACT", href: "/contact" },
