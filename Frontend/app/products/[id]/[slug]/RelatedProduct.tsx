@@ -49,7 +49,10 @@ const RelatedProduct = ({ category }: Props) => {
                 className={`${spaceMono.className} text-center w-[calc(25%-30px)] shrink-0`}
               >
                 <Link
-                  href={`/latestcollections/${product.name.trim().replace(/\s+/g, "-").replace(/-+/g, "-").toLowerCase()}`}
+                  href={`/products/${product._id}/${product.name
+                    .trim()
+                    .replace(/\s+/g, "-")
+                    .toLowerCase()}`}
                   onMouseEnter={() => setHoveredIndex(actualIndex)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >

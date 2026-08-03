@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Search from "../search/Search";
 
 import { FaSearch } from "react-icons/fa";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiShoppingBag, FiX } from "react-icons/fi";
 const Navbar = () => {
   const router = useRouter();
   const navs = [
@@ -76,8 +76,8 @@ const Navbar = () => {
     },
     {
       label: "Collections",
-      href:"/collections"
-    }
+      href: "/collections",
+    },
   ];
   const menuItemsTwo = [
     {
@@ -89,10 +89,11 @@ const Navbar = () => {
   ];
   const [isOpenMenubar, setIsOpenMenubar] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
-    const active = isOpenMenubar || isSearchOpen;
+    const active = isOpenMenubar || isSearchOpen || isCartOpen;
     const scrolly = window.scrollY;
 
     if (active) {
@@ -107,22 +108,35 @@ const Navbar = () => {
       };
     }
     return undefined;
-  }, [isOpenMenubar, isSearchOpen]);
+  }, [isOpenMenubar, isSearchOpen, isCartOpen]);
 
   const toggleMenuBar = () => {
     setActiveDropdown(null);
     if (isSearchOpen) setIsSearchOpen(false);
+    if (isCartOpen) setIsCartOpen(false);
     setIsOpenMenubar((prev) => !prev);
   };
 
   const openSearch = () => {
     setIsOpenMenubar(false);
+    setIsCartOpen(false);
     setActiveDropdown(null);
     setIsSearchOpen(true);
   };
 
   const closeSearch = () => {
     setIsSearchOpen(false);
+  };
+
+  const openCart = () => {
+    setIsOpenMenubar(false);
+    setIsSearchOpen(false);
+    setActiveDropdown(null);
+    setIsCartOpen(true);
+  };
+
+  const closeCart = () => {
+    setIsCartOpen(false);
   };
 
   const toggleDropdown = (label: string) => {
@@ -158,43 +172,58 @@ const Navbar = () => {
           NEVER NEVER
         </Link>
 
-        <div className="absolute right-4 hidden items-center gap-5 md:flex">
-          {navs.map((nav, index) => (
-            <div key={index}>
-              {nav.href ? (
-                <Link
-                  href={nav.href}
-                  className={`${spaceMono.className} cursor-pointer`}
-                >
-                  {nav.label}
-                </Link>
-              ) : nav.label === "SEARCH" ? (
-                <button
-                  type="button"
-                  onClick={openSearch}
-                  className={`${spaceMono.className} cursor-pointer`}
-                >
-                  SEARCH
-                </button>
-              ) : (
-                <span className={`${spaceMono.className} cursor-pointer`}>
-                  {nav.label === "CART" ? `CART (${0})` : nav.label}
-                </span>
-              )}
-            </div>
-          ))}
+        <div className="absolute right-4 flex items-center gap-3 md:right-4">
+          <button
+            type="button"
+            onClick={openCart}
+            aria-label="Open cart"
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-white/10 md:hidden"
+          >
+            <FiShoppingBag size={20} />
+          </button>
+
+          <div className="hidden items-center gap-5 md:flex">
+            {navs.map((nav, index) => (
+              <div key={index}>
+                {nav.href ? (
+                  <Link
+                    href={nav.href}
+                    className={`${spaceMono.className} cursor-pointer`}
+                  >
+                    {nav.label}
+                  </Link>
+                ) : nav.label === "SEARCH" ? (
+                  <button
+                    type="button"
+                    onClick={openSearch}
+                    className={`${spaceMono.className} cursor-pointer`}
+                  >
+                    SEARCH
+                  </button>
+                ) : (
+                  <button
+                    onClick={openCart}
+                    className={`${spaceMono.className} cursor-pointer`}
+                  >
+                    {nav.label === "CART" ? `CART (${0})` : nav.label}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div
         className={`fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${
-          isOpenMenubar || isSearchOpen
+          isOpenMenubar || isSearchOpen || isCartOpen
             ? "opacity-100"
             : "pointer-events-none opacity-0"
         }`}
         onClick={() => {
           if (isSearchOpen) closeSearch();
           if (isOpenMenubar) toggleMenuBar();
+          if (isCartOpen) closeCart();
         }}
       />
 
@@ -294,6 +323,58 @@ const Navbar = () => {
             </div>
           </div>
         )}
+      </aside>
+
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-black text-black shadow-2xl transition-all duration-300 ${
+          isCartOpen
+            ? "translate-x-0 opacity-100"
+            : "translate-x-full pointer-events-none opacity-0"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-gray-600 p-6">
+          <div className="">
+            <h2
+              className={`${spaceMono.className} text-white text-lg uppercase tracking-widest`}
+            >
+              Cart
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={closeCart}
+            className="rounded-full p-2 transition text-white"
+            aria-label="Close cart"
+          >
+            <FiX size={24} />
+          </button>
+        </div>
+
+        <div className="flex-1 p-6 border-b border-gray-600 overflow-y-auto">
+          <div className="flex  flex-col items-center justify-center text-center">
+            <p className="text-lg font-semibold uppercase tracking-wide">
+              Your cart is empty
+            </p>
+            <p className="mt-2 text-sm text-gray-500">
+              Add a few products and they will appear here.
+            </p>
+          </div>
+        </div>
+        <div>
+          <p className={`${spaceMono.className} text-white`}>Add order note</p>
+          <p className={`${spaceMono.className} text-gray-400 `}>
+            Taxes and shipping calculated at checkout
+          </p>
+        </div>
+        <div className="">
+          <Link
+            href="/collections"
+            onClick={closeCart}
+            className={`flex w-full items-center justify-center  bg-black py-3 text-sm font-semibold uppercase tracking-[0.2em]  transition hover:bg-gray-300 ${spaceMono.className} bg-white`}
+          >
+            CHECKOUT
+          </Link>
+        </div>
       </aside>
     </div>
   );

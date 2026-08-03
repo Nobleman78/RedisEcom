@@ -24,34 +24,62 @@ const Follow = () => {
       url: "twitter.com/never-never",
     },
   ];
+
+  const buttons = [
+    {
+      title: " Newsletter",
+      url: "/newsletter",
+    },
+    {
+      title: "Terms & Conditions",
+      url: "/terms-and-conditions",
+    },
+    {
+      title: "Delivery & Returns",
+      url: "/delivery-and-returns",
+    },
+    {
+      title: "Contact",
+      url: "/contact",
+    },
+  ];
+
   return (
     <div className="my-20">
-      <h2 className={`${spaceMono.className} text-center text-3xl uppercase `}>
-        Follow
-      </h2>
       <div className="max-w-xs mx-auto flex flex-row  justify-between mt-10">
         {socialLinks.map((item, index) => {
           const Icon = item.icon;
 
           return (
             <Link href={item.url} key={index} target="_blank">
-              <Icon size={20} className="cursor-pointer" />
+              <Icon size={18} className="cursor-pointer" />
             </Link>
           );
         })}
       </div>
 
-      {/* Text */}
-      <div className="max-w-5xl mx-auto mt-20 text-center">
-        <p className={`${spaceMono.className}`}>
-          Never Never is a men’s streetwear clothing store based in Belfast and
-          all of our stock is available to be shipped worldwide. We are
-          authorised stockists of premium men’s streetwear brands such as Cav
-          Empt, Carhartt WIP, Brain Dead, No Problemo, Gramicci, Aries, The
-          Salvages, Roa, Salomon and many more men’s contemporary streetwear
-          fashion brands.
-        </p>
+      {/* button div */}
+      <div className="max-w-lg mx-auto flex flex-row  justify-between mt-10">
+        {buttons.map((item, index) => {
+          return item.url ? (
+            <Link href={item.url} key={index} target="_blank">
+              <p className={`text-xs cursor-pointer ${spaceMono.className}`}>
+                {item.title}
+              </p>
+            </Link>
+          ) : (
+            <p
+              className={`text-xs cursor-pointer ${spaceMono.className}`}
+              key={index}
+            >
+              {item.title}
+            </p>
+          );
+        })}
       </div>
+      <p className={`text-center uppercase ${spaceMono.className} text-xs mt-5`}>
+        © 2026 - Never Never
+      </p>
     </div>
   );
 };
