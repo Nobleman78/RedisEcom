@@ -1,15 +1,28 @@
 "use client";
 import { michroma, Nimbus, spaceMono } from "@/fonts/Fonts";
 
+import {
+  fetchCart,
+  removeCartItem,
+  updateCartQuantity,
+} from "@/feature/redux/cart/cartApi";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Search from "../search/Search";
-
 import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiShoppingBag, FiX } from "react-icons/fi";
+import Search from "../search/Search";
 const Navbar = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const cartCount = useAppSelector((state) => state.cart.totalQuantity);
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
   const navs = [
     { label: "LOGIN", href: "/login" },
     { label: "SEARCH" },
@@ -143,6 +156,15 @@ const Navbar = () => {
     setActiveDropdown((prev) => (prev === label ? null : label));
   };
 
+  const handleQuantityChange = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      dispatch(removeCartItem({ productId: id }));
+      return;
+    }
+
+    dispatch(updateCartQuantity({ productId: id, quantity }));
+  };
+
   return (
     <div className="fixed left-0 top-0 z-100 w-full bg-black text-white shadow-sm">
       <div className="flex flex-col items-center justify-center">
@@ -205,7 +227,7 @@ const Navbar = () => {
                     onClick={openCart}
                     className={`${spaceMono.className} cursor-pointer`}
                   >
-                    {nav.label === "CART" ? `CART (${0})` : nav.label}
+                    {nav.label === "CART" ? `CART (${cartCount})` : nav.label}
                   </button>
                 )}
               </div>
@@ -231,7 +253,7 @@ const Navbar = () => {
         <div className="fixed inset-x-0 top-27.5 z-50 mx-auto w-full bg-black  border-t border-gray-500 ">
           <div className=" flex flex-row items-center p-6 shadow-2xl gap-10 mx-5">
             <FaSearch size={20} />
-            <Search />
+            <Search onProductSelect={closeSearch} />
           </div>
         </div>
       )}
@@ -350,31 +372,108 @@ const Navbar = () => {
           </button>
         </div>
 
-        <div className="flex-1 p-6 border-b border-gray-600 overflow-y-auto">
-          <div className="flex  flex-col items-center justify-center text-center">
-            <p className="text-lg font-semibold uppercase tracking-wide">
-              Your cart is empty
-            </p>
-            <p className="mt-2 text-sm text-gray-500">
-              Add a few products and they will appear here.
-            </p>
+        <div className="flex-1 overflow-y-auto border-b border-gray-600 p-6">
+          {cartItems.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {cartItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-start justify-between gap-4  pb-4"
+                >
+                  <div className="flex gap-3">
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden border border-gray-700 bg-gray-900">
+                      <Image
+                        src={item.img}
+                        alt={item.name}
+                        width={100}
+                        height={100}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p
+                        className={`${spaceMono.className} text-sm uppercase text-white`}
+                      >
+                        {item.name}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity - 1)
+                          }
+                          className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
+                        >
+                          -
+                        </button>
+                        <span
+                          className={`${spaceMono.className} text-sm text-white`}
+                        >
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity + 1)
+                          }
+                          className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          dispatch(removeCartItem({ productId: item.id }))
+                        }
+                        className={`${spaceMono.className} mt-2 text-left text-xs uppercase cursor-pointer underline text-white`}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                  <p className={`${spaceMono.className} text-sm text-white`}>
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <p
+                className={`${spaceMono.className} text-lg uppercase tracking-wide text-white`}
+              >
+                Your cart is empty
+              </p>
+              <p
+                className={`${spaceMono.className} mt-2 text-sm text-gray-500`}
+              >
+                Add a few products and they will appear here.
+              </p>
+            </div>
+          )}
+        </div>
+        {cartItems.length > 0 && (
+          <div className="px-6 py-6">
+            <div className="mb-10">
+              <p className={`${spaceMono.className} text-white`}>
+                Add order note
+              </p>
+              <p className={`${spaceMono.className} text-gray-400 `}>
+                Taxes and shipping calculated at checkout
+              </p>
+            </div>
+            <div className="">
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                className={`flex w-full items-center justify-center  bg-black py-3 text-sm font-semibold uppercase tracking-[0.2em]  transition hover:bg-gray-300 ${spaceMono.className} bg-white`}
+              >
+                CHECKOUT
+              </Link>
+            </div>
           </div>
-        </div>
-        <div>
-          <p className={`${spaceMono.className} text-white`}>Add order note</p>
-          <p className={`${spaceMono.className} text-gray-400 `}>
-            Taxes and shipping calculated at checkout
-          </p>
-        </div>
-        <div className="">
-          <Link
-            href="/collections"
-            onClick={closeCart}
-            className={`flex w-full items-center justify-center  bg-black py-3 text-sm font-semibold uppercase tracking-[0.2em]  transition hover:bg-gray-300 ${spaceMono.className} bg-white`}
-          >
-            CHECKOUT
-          </Link>
-        </div>
+        )}
       </aside>
     </div>
   );

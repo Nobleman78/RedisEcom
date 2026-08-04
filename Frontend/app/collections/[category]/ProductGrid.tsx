@@ -8,6 +8,7 @@ interface Props {
 }
 
 export default function ProductGrid({ products }: Props) {
+  console.log(products);
   return (
     <section className="grid grid-cols-3 mx-10 my-10 gap-10">
       {products.map((product) => (

@@ -2,7 +2,7 @@ import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { searchProducts } from "../../feature/product/productApi";
+import { searchProducts } from "../../feature/redux/product/productApi";
 import { demoProducts } from "../../public/DemoProducts/demoproducts";
 
 interface Product {
@@ -14,7 +14,11 @@ interface Product {
   category?: string;
 }
 
-const Search: React.FC = () => {
+interface SearchProps {
+  onProductSelect?: () => void;
+}
+
+const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
   const [term, setTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -141,7 +145,14 @@ const Search: React.FC = () => {
             <div className="absolute top-24 left-0 right-0 bg-black h-125 z-10 overflow-y-auto overscroll-contain">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-5 mx-4 sm:mx-8 lg:mx-15 pt-6">
                 {products.slice(0, 8).map((p) => (
-                  <Link href="" key={p._id}>
+                  <Link
+                    href={`/products/${p._id}/${p.name
+                      .trim()
+                      .replace(/\s+/g, "-")
+                      .toLowerCase()}`}
+                    key={p._id}
+                    onClick={() => onProductSelect?.()}
+                  >
                     <Image
                       src={p.image}
                       alt={p.name}
@@ -164,6 +175,7 @@ const Search: React.FC = () => {
                 <div className="flex justify-center mt-10 pb-6">
                   <Link
                     href="/collections/products"
+                    onClick={() => onProductSelect?.()}
                     className={`${spaceMono.className} bg-white text-black px-5 py-2`}
                   >
                     Show all products

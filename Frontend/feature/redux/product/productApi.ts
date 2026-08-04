@@ -6,7 +6,12 @@ export async function searchProducts({
   category = "",
   page = 1,
   limit = 20,
-} = {}) {
+} : {
+  search?:string;
+  category?:string;
+  page?:number;
+  limit?:number
+}) {
   const params = new URLSearchParams();
   if (search) {
     params.set("search", search);
@@ -14,8 +19,8 @@ export async function searchProducts({
   if (category) {
     params.set("category", category);
   }
-  params.set("page", page);
-  params.set("limit", limit);
+  params.set("page", String(page));
+  params.set("limit", String(limit));
 
   const res = await fetch(`${PRODUCTS_URL}?${params.toString()}`, {
     credentials: "include",

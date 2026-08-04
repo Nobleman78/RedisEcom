@@ -1,57 +1,19 @@
 "use client";
 
 import { spaceMono } from "@/fonts/Fonts";
-import Latestone from "@/public/latestcollection/Latest-1.webp";
-import Latesttwo from "@/public/latestcollection/Latest-2.webp";
-import Latestthree from "@/public/latestcollection/Latest-3.webp";
-import Latestfour from "@/public/latestcollection/Latest-4.webp";
+import { demoProducts } from "@/public/DemoProducts/demoproducts";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
-  const latestCollections = [
-    {
-      img: Latestone,
-      title: "By Parra Wrapped Around T-shirt -Dirty White",
-      price: 30,
-    },
-    {
-      img: Latesttwo,
-      title: "By Parra Wrapped Around T-shirt -Dirty White",
-      price: 30,
-    },
-    { img: Latestthree, title: "By Parra Bear Dog T-Shirt - White", price: 30 },
-    {
-      img: Latestfour,
-      title: "By Parra Vertical Thought T-Shirt - White",
-      price: 30,
-    },
-    {
-      img: Latestone,
-      title: "By Parra Wrapped Around T-shirt -Dirty White",
-      price: 30,
-    },
-    {
-      img: Latesttwo,
-      title: "By Parra Wrapped Around T-shirt -Dirty White",
-      price: 30,
-    },
-    { img: Latestthree, title: "By Parra Bear Dog T-Shirt - White", price: 30 },
-    {
-      img: Latestfour,
-      title: "By Parra Vertical Thought T-Shirt - White",
-      price: 30,
-    },
-  ];
-
   const ITEMS_PER_PAGE = 4;
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleNext = () => {
-    if (startIndex + ITEMS_PER_PAGE < latestCollections.length) {
+    if (startIndex + ITEMS_PER_PAGE < demoProducts.length) {
       setStartIndex((prev) => prev + ITEMS_PER_PAGE);
     }
   };
@@ -62,6 +24,9 @@ const Latestcollection = () => {
     }
   };
 
+  // Calculate current page number (0, 1, 2...)
+  const pageIndex = startIndex / ITEMS_PER_PAGE;
+
   return (
     <div className="mt-20">
       <h2
@@ -70,40 +35,43 @@ const Latestcollection = () => {
         Latest
       </h2>
 
-      {/* Outer Viewport (Clips items sliding out) */}
+      {/* Outer Viewport */}
       <div className="relative mx-15 my-10 overflow-hidden">
         {/* Animated Sliding Track */}
         <div
           className="flex gap-10 transition-transform duration-500 ease-in-out"
           style={{
-            transform: `translateX(-${(startIndex / ITEMS_PER_PAGE) * 100}%)`,
+            // Shift by 100% of the container width PLUS 40px (gap-10) per page
+            transform: `translateX(calc(-${pageIndex * 100}% - ${pageIndex * 40}px))`,
           }}
         >
-          {latestCollections.map((item, actualIndex) => {
+          {demoProducts.map((item, actualIndex) => {
             const isLastInView = actualIndex === startIndex + 3;
             const isFirstInView = actualIndex === startIndex;
 
             return (
               <div
                 key={actualIndex}
-                className="w-[calc(25%-30px)] shrink-0"
+                className="w-[calc((100%-120px)/4)] shrink-0"
               >
                 <Link
-                  href={`/latestcollections/${item.title
+                  href={`/products/${item._id}/${item.name
                     .trim()
                     .replace(/\s+/g, "-")
-                    .replace(/-+/g, "-")}`}
+                    .toLowerCase()}`}
                   onMouseEnter={() => setHoveredIndex(actualIndex)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
                   <div className="relative overflow-hidden">
                     <Image
-                      alt={item.title}
-                      src={item.img}
-                      className="object-cover transition-transform duration-300 hover:scale-110"
+                      alt={item.name}
+                      src={item.image}
+                      height={600}
+                      width={600}
+                      className="object-cover transition-transform duration-300 hover:scale-110 aspect-square"
                     />
 
-                    {/* Left Arrow with Fade & Slide animation on hover */}
+                    {/* Left Arrow */}
                     {hoveredIndex === actualIndex &&
                       isFirstInView &&
                       startIndex > 0 && (
@@ -121,11 +89,10 @@ const Latestcollection = () => {
                         </button>
                       )}
 
-                    {/* Right Arrow with Fade & Slide animation on hover */}
+                    {/* Right Arrow */}
                     {hoveredIndex === actualIndex &&
                       isLastInView &&
-                      startIndex + ITEMS_PER_PAGE <
-                        latestCollections.length && (
+                      startIndex + ITEMS_PER_PAGE < demoProducts.length && (
                         <button
                           onClick={(e) => {
                             e.preventDefault();
@@ -142,7 +109,7 @@ const Latestcollection = () => {
                   </div>
 
                   <h2 className={`text-center mt-3 ${spaceMono.className}`}>
-                    {item.title}
+                    {item.name}
                   </h2>
                 </Link>
 
@@ -153,10 +120,11 @@ const Latestcollection = () => {
             );
           })}
         </div>
+
         <div className="flex items-center justify-center my-10">
           <Link
             href="/collections/latest"
-            className={` bg-black text-white px-7 py-3 ${spaceMono.className} uppercase`}
+            className={`bg-black text-white px-7 py-3 ${spaceMono.className} uppercase`}
           >
             See all latest
           </Link>

@@ -4,20 +4,17 @@ import ProductDetails from "./ProductDetails";
 import RelatedProduct from "./RelatedProduct";
 
 interface Props {
-  params: Promise<{
+  params: {
     id: string;
-    category: string | undefined;
-    name: string;
-    price: number;
-    size: string[];
-    img: string;
-    discount: number;
-  }>;
+    slug: string;
+  };
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { id } = await params;
+  const { id, slug } = await params;
+  console.log(slug);
   const product = getProductById(id);
+  console.log("This is product", product);
   const category = product?.category;
   const name = product?.name;
   const description = product?.description;
@@ -50,6 +47,7 @@ export default async function ProductPage({ params }: Props) {
     <div className="mt-32">
       <BreadCrumb category={category} name={name} />
       <ProductDetails
+        id={id}
         category={category}
         name={name}
         description={description}
@@ -58,8 +56,7 @@ export default async function ProductPage({ params }: Props) {
         image={img}
         discount={Number(discount)}
       />
-      <RelatedProduct category={category}/>
-      
+      <RelatedProduct category={category} />
     </div>
   );
 }

@@ -1,10 +1,13 @@
 "use client";
+import { addToCart } from "@/feature/redux/cart/cartApi";
+import { useAppDispatch } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
 import { terms } from "@/public/terms/terms";
 import Image from "next/image";
 import { useState } from "react";
 
 interface Props {
+  id: string;
   category: string;
   name: string;
   description: string;
@@ -15,6 +18,7 @@ interface Props {
 }
 
 const ProductDetails = ({
+  id,
   category,
   price,
   description,
@@ -23,6 +27,7 @@ const ProductDetails = ({
   image,
   discount,
 }: Props) => {
+  const dispatch = useAppDispatch();
   const [isSelectedSize, setIsSelectedSize] = useState(size[0]);
   const [productItem, setProductItem] = useState(1);
   const [openTerm, setOpenTerm] = useState<keyof typeof terms | null>(null);
@@ -38,6 +43,15 @@ const ProductDetails = ({
     if (productItem > 0) {
       setProductItem((prev) => prev - 1);
     }
+  };
+
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        productId: id,
+        quantity: productItem,
+      }),
+    );
   };
 
   return (
@@ -94,7 +108,10 @@ const ProductDetails = ({
 
           {/* add to cart and buy now */}
           <div className="flex flex-col gap-5 mt-10">
-            <button className="border-2 px-5 py-3 cursor-pointer hover:text-white hover:bg-black">
+            <button
+              onClick={handleAddToCart}
+              className="border-2 px-5 py-3 cursor-pointer hover:text-white hover:bg-black"
+            >
               ADD TO CART
             </button>
             <button className="bg-black text-white px-5 py-3 cursor-pointer">

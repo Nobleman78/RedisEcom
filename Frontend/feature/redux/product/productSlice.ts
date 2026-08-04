@@ -1,8 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { searchProducts } from "../api/productApi";
+import { searchProducts } from "./productApi";
 
+export interface FetchProductsArgs {
+  search?: string;
+  category?: string;
+  page?: number;
+  limit?: number; 
+}
 // Thunk: fetch a page of products (with optional search/category)
-export const fetchProducts = createAsyncThunk(
+export const fetchProducts = createAsyncThunk<Awaited<ReturnType<typeof searchProducts>>,FetchProductsArgs,{ rejectValue: string }>(
   "products/fetch",
   async (
     { search = "", category = "", page = 1, limit = 20 } = {},
@@ -12,19 +18,31 @@ export const fetchProducts = createAsyncThunk(
       // returns { products, total, page, totalPages }
       return await searchProducts({ search, category, page, limit });
     } catch (err) {
-      return rejectWithValue(err.message);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred while fetching products";
+      return rejectWithValue(errorMessage);
     }
   },
 );
 
-const initialState = {
+export interface ProductState {
+  items:[];
+  total : number;
+  page :number;
+  totalPages: number;
+  search :string;
+  category :string;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: ProductState = {
   items: [],
   total: 0,
   page: 1,
   totalPages: 0,
   search: "",
   category: "",
-  status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: "idle",
   error: null,
 };
 
@@ -71,10 +89,10 @@ export const { setSearch, setCategory, setPage, clearProducts } =
   productSlice.actions;
 
 // selectors
-export const selectProducts = (state) => state.products.items;
-export const selectProductStatus = (state) => state.products.status;
-export const selectProductError = (state) => state.products.error;
-export const selectPagination = (state) => ({
+export const selectProducts =(state: { products: ProductState }) => state.products.items;
+export const selectProductStatus = (state: { products: ProductState }) => state.products.status;
+export const selectProductError = (state: { products: ProductState })=> state.products.error;
+export const selectPagination = (state: { products: ProductState }) => ({
   page: state.products.page,
   totalPages: state.products.totalPages,
   total: state.products.total,
