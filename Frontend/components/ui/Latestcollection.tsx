@@ -1,19 +1,27 @@
 "use client";
 
 import { spaceMono } from "@/fonts/Fonts";
-import { demoProducts } from "@/public/DemoProducts/demoproducts";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { fetchProducts, selectProducts } from "@/feature/redux/product/productSlice";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
   const ITEMS_PER_PAGE = 4;
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+  
+  useEffect(() => {
+    dispatch(fetchProducts({ limit: 12 }));
+  }, [dispatch]);
+
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleNext = () => {
-    if (startIndex + ITEMS_PER_PAGE < demoProducts.length) {
+    if (startIndex + ITEMS_PER_PAGE < products.length) {
       setStartIndex((prev) => prev + ITEMS_PER_PAGE);
     }
   };
@@ -45,7 +53,7 @@ const Latestcollection = () => {
             transform: `translateX(calc(-${pageIndex * 100}% - ${pageIndex * 40}px))`,
           }}
         >
-          {demoProducts.map((item, actualIndex) => {
+          {products.map((item, actualIndex) => {
             const isLastInView = actualIndex === startIndex + 3;
             const isFirstInView = actualIndex === startIndex;
 
@@ -92,7 +100,7 @@ const Latestcollection = () => {
                     {/* Right Arrow */}
                     {hoveredIndex === actualIndex &&
                       isLastInView &&
-                      startIndex + ITEMS_PER_PAGE < demoProducts.length && (
+                      startIndex + ITEMS_PER_PAGE < products.length && (
                         <button
                           onClick={(e) => {
                             e.preventDefault();

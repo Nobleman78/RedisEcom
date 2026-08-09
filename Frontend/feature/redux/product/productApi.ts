@@ -6,11 +6,11 @@ export async function searchProducts({
   category = "",
   page = 1,
   limit = 20,
-} : {
-  search?:string;
-  category?:string;
-  page?:number;
-  limit?:number
+}: {
+  search?: string;
+  category?: string;
+  page?: number;
+  limit?: number
 }) {
   const params = new URLSearchParams();
   if (search) {
@@ -28,6 +28,40 @@ export async function searchProducts({
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Failed to search products: ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+
+export async function getProductByCategory(category:string){
+  const result = await fetch(`${PRODUCTS_URL}/category/${category}`,{
+    credentials:"include"
+  })
+  if(!result.ok){
+    const text = await result.text().catch(()=>"")
+    throw new Error(`Failed to fetch product by category: ${result.status} ${text}`)
+  }
+  return result.json()
+
+}
+export async function getProductByIdApi(id: string) {
+  const res = await fetch(`${PRODUCTS_URL}/${id}`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to fetch product: ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+export async function getCategoriesApi() {
+  const res = await fetch(`${PRODUCTS_URL}/categories`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to fetch categories: ${res.status} ${text}`);
   }
   return res.json();
 }

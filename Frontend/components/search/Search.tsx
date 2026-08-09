@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { searchProducts } from "../../feature/redux/product/productApi";
-import { demoProducts } from "../../public/DemoProducts/demoproducts";
 
 interface Product {
   _id: string;
@@ -30,21 +29,6 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
     undefined,
   );
 
-  const getDemoResults = useCallback((query: string): Product[] => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return [];
-
-    return demoProducts.filter((product) => {
-      const haystack = [
-        product.name,
-        product.description,
-        product.category ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
-    }) as Product[];
-  }, []);
 
   const runSearch = useCallback(
     async (query: string) => {
@@ -61,22 +45,15 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
         setProducts(data.products ?? []);
         setHasSearched(true);
         setError("");
-      } catch {
-        const fallbackResults = getDemoResults(query);
-
-        setProducts(fallbackResults);
+      } catch (err) {
+        setProducts([]);
         setHasSearched(true);
-
-        if (fallbackResults.length === 0) {
-          setError("Could not load results. Showing demo products instead.");
-        } else {
-          setError("");
-        }
+        setError("Could not load results. Please try again.");
       } finally {
         setLoading(false);
       }
     },
-    [getDemoResults],
+    [],
   );
 
   useEffect(() => {

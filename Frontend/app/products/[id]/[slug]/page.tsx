@@ -1,27 +1,38 @@
-import { getProductById } from "@/hook/demoProductApiHook/demoProductApi";
+"use client";
+
 import BreadCrumb from "./BreadCrumb";
 import ProductDetails from "./ProductDetails";
 import RelatedProduct from "./RelatedProduct";
+import { use, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { fetchProductById, selectSingleProduct } from "@/feature/redux/product/productSlice";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
     slug: string;
-  };
+  }>;
 }
 
-export default async function ProductPage({ params }: Props) {
-  const { id, slug } = await params;
-  console.log(slug);
-  const product = getProductById(id);
-  console.log("This is product", product);
+export default function ProductPage({ params }: Props) {
+  const { id, slug } = use(params);
+  
+  const dispatch = useAppDispatch();
+  const product = useAppSelector(selectSingleProduct);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductById(id));
+    }
+  }, [id, dispatch]);
+
   const category = product?.category;
   const name = product?.name;
   const description = product?.description;
   const price = product?.price;
-  const size = product?.size?.map((size) => size);
+  const size = product?.size?.map((size: string) => size);
   const img = product?.image;
-  const discount = product?.isDiscount;
+  const discount = product?.isDiscount ?? false;
 
   // We have to handle the edge case also
   if (!category) {

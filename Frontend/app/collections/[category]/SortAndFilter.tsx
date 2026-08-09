@@ -44,7 +44,7 @@ export default function SortAndFilter({ totalProducts }: Props) {
           </h2>
         </section>
 
-        <div className="absolute right-[20px] inset-y-0 flex">
+        <div className="absolute right-5 inset-y-0 flex">
           <div className="flex items-center justify-center w-40 border-l border-gray-200 text-gray-400 hover:text-black">
             <button
               ref={buttonRef}
@@ -72,7 +72,7 @@ export default function SortAndFilter({ totalProducts }: Props) {
       {openSortOption && (
         <div
           ref={wrapperRef}
-          className="absolute right-[147px] p-4 border-l border-r border-b bg-white border-gray-300"
+          className="absolute right-36.75 p-4 border-l border-r border-b bg-white border-gray-300"
         >
           {sortOptions.map((option) => (
             <div key={option}>
