@@ -33,10 +33,43 @@ const Navbar = () => {
 
   // Fetch profile whenever the route changes, so login redirects update Navbar state.
   useEffect(() => {
-    fetch("/api/auth/profile", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setUser(data))
-      .catch(() => setUser(null));
+    const fetchProfile = async () => {
+      try {
+        const profileRes = await fetch("/api/auth/profile", {
+          credentials: "include",
+        });
+
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          setUser(data);
+          return;
+        }
+
+        if (profileRes.status === 401) {
+          const refreshRes = await fetch("/api/auth/refresh-token", {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (refreshRes.ok) {
+            const retryRes = await fetch("/api/auth/profile", {
+              credentials: "include",
+            });
+            if (retryRes.ok) {
+              const data = await retryRes.json();
+              setUser(data);
+              return;
+            }
+          }
+        }
+
+        setUser(null);
+      } catch (error) {
+        setUser(null);
+      }
+    };
+
+    fetchProfile();
   }, [pathname]);
 
   useEffect(() => {
@@ -423,7 +456,7 @@ const Navbar = () => {
           {/* Greeting */}
           {user && (
             <p className={`${spaceMono.className} text-gray-400 text-sm`}>
-              Hello, {user.name} 
+              Hello, {user.name}
             </p>
           )}
 
