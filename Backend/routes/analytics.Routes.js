@@ -2,8 +2,8 @@ import express from "express";
 import {
   getAnalyticsData,
   getDailySalesData,
-} from "../controllers/analytics.Controller";
-import { adminRoute, protectRoute } from "../middleware/auth.middleware";
+} from "../controllers/analytics.Controller.js";
+import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
 const router = express.Router();
 
 router.get("/", protectRoute, adminRoute, async (req, res) => {

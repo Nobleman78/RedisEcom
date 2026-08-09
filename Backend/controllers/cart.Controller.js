@@ -2,8 +2,8 @@ import Product from "../model/product.model.js";
 
 const formatCartResponse = async (user) => {
   const products = await Product.find({
-    _id: { $in: user.cartItems.map((item) => item.product) },
-  });
+    _id: { $in: user.cartItems.map((item) => item.product) }
+  })
 
   const cartItems = products.map((product) => {
     const cartItem = user.cartItems.find(
@@ -23,6 +23,7 @@ const formatCartResponse = async (user) => {
     (total, item) => total + item.quantity,
     0,
   );
+
 
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
