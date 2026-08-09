@@ -29,32 +29,28 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
     undefined,
   );
 
+  const runSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      return;
+    }
 
-  const runSearch = useCallback(
-    async (query: string) => {
-      if (!query.trim()) {
-        return;
-      }
+    try {
+      const data = await searchProducts({
+        search: query,
+        page: 1,
+      });
 
-      try {
-        const data = await searchProducts({
-          search: query,
-          page: 1,
-        });
-
-        setProducts(data.products ?? []);
-        setHasSearched(true);
-        setError("");
-      } catch (err) {
-        setProducts([]);
-        setHasSearched(true);
-        setError("Could not load results. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+      setProducts(data.products ?? []);
+      setHasSearched(true);
+      setError("");
+    } catch (err: unknown) {
+      setProducts([]);
+      setHasSearched(true);
+      setError("Can not load result");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
