@@ -64,7 +64,7 @@ const Navbar = () => {
         }
 
         setUser(null);
-      } catch (error) {
+      } catch {
         setUser(null);
       }
     };
