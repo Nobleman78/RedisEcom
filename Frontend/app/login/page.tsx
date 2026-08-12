@@ -1,7 +1,14 @@
+import { loginAction } from "@/app/actions/auth";
 import { michroma, spaceMono } from "@/fonts/Fonts";
 import Link from "next/link";
 
-const page = () => {
+interface PageProps {
+  searchParams: Promise<{ error?: string }>;
+}
+
+const page = async ({ searchParams }: PageProps) => {
+  const { error } = await searchParams;
+
   return (
     <div>
       <div
@@ -17,18 +24,31 @@ const page = () => {
 
       <div className="max-w-md mx-auto space-y-5 mt-20">
         <h2 className={`${spaceMono.className}`}>Sign in</h2>
-        <form action="" className="space-y-3">
+
+        {/* Error message from failed login */}
+        {error && (
+          <p className={`${spaceMono.className} text-red-500 text-sm`}>
+            {decodeURIComponent(error)}
+          </p>
+        )}
+
+        <form action={loginAction} className="space-y-3">
           <input
             type="email"
+            name="email"
             placeholder="Email"
+            required
             className={`w-full px-5 py-2 border outline-none ${spaceMono.className}`}
           />
           <input
             type="password"
+            name="password"
             placeholder="password"
+            required
             className={`w-full px-5 py-2 border outline-none ${spaceMono.className}`}
           />
           <button
+            type="submit"
             className={`${spaceMono.className} flex flex-row border w-full  justify-center py-3 bg-black text-white cursor-pointer`}
           >
             Login
@@ -58,3 +78,4 @@ const page = () => {
 };
 
 export default page;
+

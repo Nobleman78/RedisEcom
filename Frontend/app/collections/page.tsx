@@ -1,9 +1,20 @@
-import { spaceMono } from "@/fonts/Fonts";
-import { getCategories } from "@/hook/demoProductApiHook/demoProductApi";
-import Link from "next/link";
+"use client";
 
-const page = () => {
-  const categoris = getCategories();
+import { spaceMono } from "@/fonts/Fonts";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { fetchCategories, selectCategories } from "@/feature/redux/product/productSlice";
+
+const Page = () => {
+  const dispatch = useAppDispatch();
+  const categoris = useAppSelector(selectCategories);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+
   const colors = [
     "bg-red-300",
     "bg-blue-300",
@@ -31,4 +42,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

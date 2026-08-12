@@ -28,10 +28,12 @@ const ProductDetails = ({
   discount,
 }: Props) => {
   const dispatch = useAppDispatch();
-  const [isSelectedSize, setIsSelectedSize] = useState(size[0]);
+  const [userSelectedSize, setUserSelectedSize] = useState<string | null>(null);
   const [productItem, setProductItem] = useState(1);
   const [openTerm, setOpenTerm] = useState<keyof typeof terms | null>(null);
 
+  const isSelectedSize = userSelectedSize ?? (size.length > 0 ? size[0] : null);
+  
   const handleOpenTermsForShippingAndTax = (term: keyof typeof terms) => {
     setOpenTerm((prev) => (prev === term ? null : term));
   };
@@ -63,7 +65,7 @@ const ProductDetails = ({
         <div className={`${spaceMono.className}`}>
           <h2 className="text-2xl mb-2">{name}</h2>
           <div className="flex flex-row items-center gap-3">
-            <p className="text-xl text-gray-500 mb-1 text-red-400">
+            <p className="text-xl mb-1 text-red-400">
               ${(price * discount) / 100}
             </p>
             <p className="text-lg line-through text-gray-500 mb-1 ">${price}</p>
@@ -83,7 +85,7 @@ const ProductDetails = ({
                     <button
                       key={item}
                       type="button"
-                      onClick={() => setIsSelectedSize(item)}
+                      onClick={() => setUserSelectedSize(item)}
                       className={`px-5 py-1 border  cursor-pointer ${
                         isActive ? "border-black " : "border-gray-300 "
                       }`}

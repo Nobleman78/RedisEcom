@@ -1,5 +1,8 @@
 import Product from "../model/product.model.js";
+import { redis } from "../lib/redis.js";
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// get all products
 export const getAllProducts = async (req, res) => {
   try {
     const { search = "", category, page = 1, limit = 20 } = req.query;
@@ -12,7 +15,7 @@ export const getAllProducts = async (req, res) => {
       ];
     }
     if (category) {
-      filter.category = category;
+      filter.category = { $regex: new RegExp(`^${escapeRegex(category)}$`, "i") };
     }
     const skip = (Number(page) - 1) * Number(limit);
     const [products, total] = await Promise.all([
@@ -25,6 +28,29 @@ export const getAllProducts = async (req, res) => {
       page: Number(page),
       totalPages: Math.ceil(total / Number(limit)),
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get all categories
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct("category");
+    res.json({ categories });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get product by ID
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -121,10 +147,17 @@ export const getRecommendedProducts = async (req, res) => {
 
 // get product by category
 export const getProductsByCategory = async (req, res) => {
-  const { category } = req.params;
+  let { category } = req.params;
+  category = category
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
   try {
-    const products = await Product.find({ category });
-    res.json({ products });
+    const products = await Product.find({
+      category: { $regex: new RegExp(`^${escapeRegex(category)}$`, "i") },
+    });
+    res.json({ products, total: products.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

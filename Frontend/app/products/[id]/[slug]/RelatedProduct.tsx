@@ -1,16 +1,25 @@
 "use client";
 import { spaceMono } from "@/fonts/Fonts";
-import { demoProductApi } from "@/hook/demoProductApiHook/demoProductApi";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { fetchProducts, selectProducts } from "@/feature/redux/product/productSlice";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 interface Props {
   category: string;
 }
 
 const RelatedProduct = ({ category }: Props) => {
-  const products = demoProductApi({ category });
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+
+  useEffect(() => {
+    if (category) {
+      dispatch(fetchProducts({ category }));
+    }
+  }, [category, dispatch]);
+
   const itemsPerPage = 4;
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

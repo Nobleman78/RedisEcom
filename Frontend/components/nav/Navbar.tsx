@@ -1,4 +1,5 @@
 "use client";
+import { logoutAction } from "@/app/actions/auth";
 import { michroma, Nimbus, spaceMono } from "@/fonts/Fonts";
 
 import {
@@ -9,25 +10,78 @@ import {
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiShoppingBag, FiX } from "react-icons/fi";
 import Search from "../search/Search";
+
+interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const Navbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const cartCount = useAppSelector((state) => state.cart.totalQuantity);
   const cartItems = useAppSelector((state) => state.cart.cartItems);
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  // Fetch profile whenever the route changes, so login redirects update Navbar state.
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileRes = await fetch("/api/auth/profile", {
+          credentials: "include",
+        });
+
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          setUser(data);
+          return;
+        }
+
+        if (profileRes.status === 401) {
+          const refreshRes = await fetch("/api/auth/refresh-token", {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (refreshRes.ok) {
+            const retryRes = await fetch("/api/auth/profile", {
+              credentials: "include",
+            });
+            if (retryRes.ok) {
+              const data = await retryRes.json();
+              setUser(data);
+              return;
+            }
+          }
+        }
+
+        setUser(null);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    fetchProfile();
+  }, [pathname]);
 
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
+
   const navs = [
-    { label: "LOGIN", href: "/login" },
+    { label: user ? "ACCOUNT" : "LOGIN", href: user ? undefined : "/login" },
     { label: "SEARCH" },
     { label: "CART" },
   ];
+
   const menuItemsOne = [
     { label: "LATEST", href: "/latest" },
     {
@@ -103,10 +157,11 @@ const Navbar = () => {
   const [isOpenMenubar, setIsOpenMenubar] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
-    const active = isOpenMenubar || isSearchOpen || isCartOpen;
+    const active = isOpenMenubar || isSearchOpen || isCartOpen || isAccountOpen;
     const scrolly = window.scrollY;
 
     if (active) {
@@ -121,18 +176,20 @@ const Navbar = () => {
       };
     }
     return undefined;
-  }, [isOpenMenubar, isSearchOpen, isCartOpen]);
+  }, [isOpenMenubar, isSearchOpen, isCartOpen, isAccountOpen]);
 
   const toggleMenuBar = () => {
     setActiveDropdown(null);
     if (isSearchOpen) setIsSearchOpen(false);
     if (isCartOpen) setIsCartOpen(false);
+    if (isAccountOpen) setIsAccountOpen(false);
     setIsOpenMenubar((prev) => !prev);
   };
 
   const openSearch = () => {
     setIsOpenMenubar(false);
     setIsCartOpen(false);
+    setIsAccountOpen(false);
     setActiveDropdown(null);
     setIsSearchOpen(true);
   };
@@ -144,12 +201,25 @@ const Navbar = () => {
   const openCart = () => {
     setIsOpenMenubar(false);
     setIsSearchOpen(false);
+    setIsAccountOpen(false);
     setActiveDropdown(null);
     setIsCartOpen(true);
   };
 
   const closeCart = () => {
     setIsCartOpen(false);
+  };
+
+  const openAccount = () => {
+    setIsOpenMenubar(false);
+    setIsSearchOpen(false);
+    setIsCartOpen(false);
+    setActiveDropdown(null);
+    setIsAccountOpen(true);
+  };
+
+  const closeAccount = () => {
+    setIsAccountOpen(false);
   };
 
   const toggleDropdown = (label: string) => {
@@ -207,7 +277,15 @@ const Navbar = () => {
           <div className="hidden items-center gap-5 md:flex">
             {navs.map((nav, index) => (
               <div key={index}>
-                {nav.href ? (
+                {nav.label === "ACCOUNT" ? (
+                  <button
+                    type="button"
+                    onClick={openAccount}
+                    className={`${spaceMono.className} cursor-pointer`}
+                  >
+                    ACCOUNT
+                  </button>
+                ) : nav.href ? (
                   <Link
                     href={nav.href}
                     className={`${spaceMono.className} cursor-pointer`}
@@ -238,7 +316,7 @@ const Navbar = () => {
 
       <div
         className={`fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${
-          isOpenMenubar || isSearchOpen || isCartOpen
+          isOpenMenubar || isSearchOpen || isCartOpen || isAccountOpen
             ? "opacity-100"
             : "pointer-events-none opacity-0"
         }`}
@@ -246,6 +324,7 @@ const Navbar = () => {
           if (isSearchOpen) closeSearch();
           if (isOpenMenubar) toggleMenuBar();
           if (isCartOpen) closeCart();
+          if (isAccountOpen) closeAccount();
         }}
       />
 
@@ -347,6 +426,100 @@ const Navbar = () => {
         )}
       </aside>
 
+      {/* ── Account Drawer ─────────────────────────────────────────────── */}
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-black text-white shadow-2xl transition-all duration-300 ${
+          isAccountOpen
+            ? "translate-x-0 opacity-100"
+            : "translate-x-full pointer-events-none opacity-0"
+        }`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-600 p-6">
+          <h2
+            className={`${spaceMono.className} text-lg uppercase tracking-widest`}
+          >
+            Account
+          </h2>
+          <button
+            type="button"
+            onClick={closeAccount}
+            className="rounded-full p-2 transition hover:bg-white/10"
+            aria-label="Close account"
+          >
+            <FiX size={24} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
+          {/* Greeting */}
+          {user && (
+            <p className={`${spaceMono.className} text-gray-400 text-sm`}>
+              Hello, {user.name}
+            </p>
+          )}
+
+          {/* Email */}
+          <div className="border-b border-gray-700 pb-5">
+            <p
+              className={`${spaceMono.className} text-xs uppercase tracking-widest text-gray-500 mb-1`}
+            >
+              Email
+            </p>
+            <p className={`${spaceMono.className} text-sm`}>
+              {user?.email ?? "—"}
+            </p>
+          </div>
+
+          {/* Address */}
+          <div className="border-b border-gray-700 pb-5">
+            <p
+              className={`${spaceMono.className} text-xs uppercase tracking-widest text-gray-500 mb-1`}
+            >
+              Address
+            </p>
+            <p className={`${spaceMono.className} text-sm text-gray-400`}>
+              No address saved
+            </p>
+            <button
+              className={`${spaceMono.className} mt-2 text-xs uppercase underline cursor-pointer hover:text-gray-300`}
+            >
+              Add Address
+            </button>
+          </div>
+
+          {/* Contact */}
+          <div className="border-b border-gray-700 pb-5">
+            <p
+              className={`${spaceMono.className} text-xs uppercase tracking-widest text-gray-500 mb-1`}
+            >
+              Contact
+            </p>
+            <Link
+              href="/contact"
+              onClick={closeAccount}
+              className={`${spaceMono.className} text-sm uppercase underline hover:text-gray-300`}
+            >
+              Go to Contact Page
+            </Link>
+          </div>
+        </div>
+
+        {/* Sign Out */}
+        <div className="border-t border-gray-600 p-6">
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className={`${spaceMono.className} w-full border border-white py-3 text-sm uppercase tracking-widest cursor-pointer hover:bg-white hover:text-black transition-colors duration-200`}
+            >
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      {/* ── Cart Drawer ─────────────────────────────────────────────────── */}
       <aside
         className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-black text-black shadow-2xl transition-all duration-300 ${
           isCartOpen
@@ -381,7 +554,7 @@ const Navbar = () => {
                   className="flex items-start justify-between gap-4  pb-4"
                 >
                   <div className="flex gap-3">
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden border border-gray-700 bg-gray-900">
+                    <div className="h-20 w-20 shrink-0 overflow-hidden border border-gray-700 bg-gray-900">
                       <Image
                         src={item.img}
                         alt={item.name}

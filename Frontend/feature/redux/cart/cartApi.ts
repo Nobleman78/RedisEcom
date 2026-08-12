@@ -41,6 +41,8 @@ export const fetchCart = createAsyncThunk<
   }
 });
 
+
+
 export const addToCart = createAsyncThunk<
   FetchCartResponse,
   { productId: string; quantity: number },

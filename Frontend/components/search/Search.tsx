@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { searchProducts } from "../../feature/redux/product/productApi";
-import { demoProducts } from "../../public/DemoProducts/demoproducts";
 
 interface Product {
   _id: string;
@@ -30,54 +29,28 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
     undefined,
   );
 
-  const getDemoResults = useCallback((query: string): Product[] => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return [];
+  const runSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      return;
+    }
 
-    return demoProducts.filter((product) => {
-      const haystack = [
-        product.name,
-        product.description,
-        product.category ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
-    }) as Product[];
+    try {
+      const data = await searchProducts({
+        search: query,
+        page: 1,
+      });
+
+      setProducts(data.products ?? []);
+      setHasSearched(true);
+      setError("");
+    } catch (err: unknown) {
+      setProducts([]);
+      setHasSearched(true);
+      setError("Can not load result");
+    } finally {
+      setLoading(false);
+    }
   }, []);
-
-  const runSearch = useCallback(
-    async (query: string) => {
-      if (!query.trim()) {
-        return;
-      }
-
-      try {
-        const data = await searchProducts({
-          search: query,
-          page: 1,
-        });
-
-        setProducts(data.products ?? []);
-        setHasSearched(true);
-        setError("");
-      } catch {
-        const fallbackResults = getDemoResults(query);
-
-        setProducts(fallbackResults);
-        setHasSearched(true);
-
-        if (fallbackResults.length === 0) {
-          setError("Could not load results. Showing demo products instead.");
-        } else {
-          setError("");
-        }
-      } finally {
-        setLoading(false);
-      }
-    },
-    [getDemoResults],
-  );
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
