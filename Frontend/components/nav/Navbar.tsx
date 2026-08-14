@@ -8,6 +8,7 @@ import {
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { createBrowserClient } from "@supabase/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,6 +35,30 @@ const Navbar = () => {
   // Fetch profile whenever the route changes, so login redirects update Navbar state.
   useEffect(() => {
     const fetchProfile = async () => {
+      // ── ADDED: Check Supabase Auth First ─────────────────────────────────────
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      );
+
+      const {
+        data: { user: supabaseUser },
+      } = await supabase.auth.getUser();
+
+      if (supabaseUser) {
+        setUser({
+          _id: supabaseUser.id,
+          name:
+            supabaseUser.user_metadata?.full_name ||
+            supabaseUser.email?.split("@")[0] ||
+            "User",
+          email: supabaseUser.email || "",
+          role: "user",
+        });
+        return;
+      }
+
+      // ── EXISTING CODE: Fallback to custom backend endpoint ─────────────────
       try {
         const profileRes = await fetch("/api/auth/profile", {
           credentials: "include",

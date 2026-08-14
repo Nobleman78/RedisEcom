@@ -1,4 +1,4 @@
-import { loginAction } from "@/app/actions/auth";
+import { loginAction, loginWithGoogle } from "@/app/actions/auth";
 import { michroma, spaceMono } from "@/fonts/Fonts";
 import Link from "next/link";
 
@@ -57,11 +57,14 @@ const page = async ({ searchParams }: PageProps) => {
 
         <h2 className={`${spaceMono.className} text-center`}> Or</h2>
 
-        <button
-          className={`${spaceMono.className} w-full cursor-pointer bg-black text-white py-3`}
-        >
-          Login with google
-        </button>
+        <form action={loginWithGoogle} className="">
+          <button
+            type="submit"
+            className={`${spaceMono.className} w-full cursor-pointer bg-black text-white py-3`}
+          >
+            Login with google
+          </button>
+        </form>
 
         {/* New User */}
         <div
@@ -78,4 +81,3 @@ const page = async ({ searchParams }: PageProps) => {
 };
 
 export default page;
-

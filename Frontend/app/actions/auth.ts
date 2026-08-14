@@ -1,5 +1,6 @@
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -151,4 +152,21 @@ export async function logoutAction(): Promise<void> {
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");
   redirect("/login");
+}
+
+export async function loginWithGoogle() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    redirect("/login?error=Google+login+failed");
+  }
+
+  redirect(data.url);
 }
