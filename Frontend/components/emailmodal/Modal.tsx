@@ -69,9 +69,9 @@ const Modal = () => {
           />
 
           <button
-            className={`${spaceMono.className} bg-black text-white px-5 py-2`}
+            className={`${spaceMono.className} bg-black text-white px-5 py-2 cursor-pointer`}
           >
-            Sign Up
+            Subscribe
           </button>
         </form>
 
