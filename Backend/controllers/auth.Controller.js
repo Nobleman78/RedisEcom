@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "node:crypto";
 import { redis } from "../lib/redis.js";
 import User from "../model/user.model.js";
 
@@ -40,6 +41,51 @@ const setCookies = (res, accessToken, refreshToken) => {
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const authorization = req.headers.authorization;
+    const supabaseUrl =
+      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+    if (!authorization || !supabaseUrl || !supabaseKey) {
+      return res.status(401).json({ message: "Google session is invalid" });
+    }
+
+    const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: authorization,
+      },
+    });
+    const supabaseUser = await userResponse.json();
+
+    if (!userResponse.ok || !supabaseUser.email) {
+      return res.status(401).json({ message: "Google session is invalid" });
+    }
+
+    let user = await User.findOne({ email: supabaseUser.email });
+    if (!user) {
+      user = await User.create({
+        name:
+          supabaseUser.user_metadata?.full_name ||
+          supabaseUser.email.split("@")[0],
+        email: supabaseUser.email,
+        password: crypto.randomBytes(32).toString("hex"),
+      });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user._id);
+    await storeRefreshToken(user._id, refreshToken);
+    setCookies(res, accessToken, refreshToken);
+    res.json({ message: "Google login successful" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 export const signup = async (req, res) => {
@@ -119,12 +165,10 @@ export const refreshToken = async (req, res) => {
     try {
       decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     } catch (jwtError) {
-      return res
-        .status(401)
-        .json({
-          message: "Invalid or expired refresh token",
-          error: jwtError.message,
-        });
+      return res.status(401).json({
+        message: "Invalid or expired refresh token",
+        error: jwtError.message,
+      });
     }
 
     const storedToken = await redis.get(`refresh_token:${decoded.userId}`);
@@ -148,7 +192,6 @@ export const refreshToken = async (req, res) => {
 
     res.json({ message: "Token refreshed successfully" });
   } catch (error) {
-    console.log("Error in refreshToken controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
