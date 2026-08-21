@@ -555,7 +555,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between border-b border-gray-600 p-6">
           <div className="">
             <h2
-              className={`${spaceMono.className} text-white text-lg uppercase tracking-widest`}
+              className={`${spaceMono.className} text-white text-md uppercase tracking-widest`}
             >
               Cart
             </h2>
@@ -566,7 +566,10 @@ const Navbar = () => {
             className="rounded-full p-2 transition text-white"
             aria-label="Close cart"
           >
-            <FiX size={24} />
+            <FiX
+              size={20}
+              className="text-gray-300 cursor-pointer hover:text-white"
+            />
           </button>
         </div>
 
@@ -639,14 +642,9 @@ const Navbar = () => {
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <p
-                className={`${spaceMono.className} text-lg uppercase tracking-wide text-white`}
+                className={`${spaceMono.className} text-md uppercase tracking-wide text-white`}
               >
                 Your cart is empty
-              </p>
-              <p
-                className={`${spaceMono.className} mt-2 text-sm text-gray-500`}
-              >
-                Add a few products and they will appear here.
               </p>
             </div>
           )}

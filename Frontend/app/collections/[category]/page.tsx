@@ -1,17 +1,16 @@
 "use client";
 
-import { spaceMono } from "@/fonts/Fonts";
-import Breadcrumb from "./BreadCrumb";
-import ProductGrid from "./ProductGrid";
-import SortAndFilter from "./SortAndFilter";
-import { use } from "react";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import {
   fetchProductByCategory,
   selectProducts,
   selectProductStatus,
 } from "@/feature/redux/product/productSlice";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { spaceMono } from "@/fonts/Fonts";
+import { use, useEffect } from "react";
+import Breadcrumb from "./BreadCrumb";
+import ProductGrid from "./ProductGrid";
+import SortAndFilter from "./SortAndFilter";
 
 interface Props {
   params: Promise<{
@@ -21,7 +20,6 @@ interface Props {
 
 export default function CategoryPage({ params }: Props) {
   const { category } = use(params);
-  console.log(category);
 
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);

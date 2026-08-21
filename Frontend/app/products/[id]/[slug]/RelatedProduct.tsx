@@ -1,10 +1,13 @@
 "use client";
+import {
+  fetchProducts,
+  selectProducts,
+} from "@/feature/redux/product/productSlice";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import { fetchProducts, selectProducts } from "@/feature/redux/product/productSlice";
+import { useEffect, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 interface Props {
   category: string;
@@ -20,21 +23,23 @@ const RelatedProduct = ({ category }: Props) => {
     }
   }, [category, dispatch]);
 
-  const itemsPerPage = 4;
+  const ITEMS_PER_PAGE = 4;
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleNext = () => {
-    if (startIndex + itemsPerPage < products.length) {
-      setStartIndex((prev) => prev + itemsPerPage);
+    if (startIndex + ITEMS_PER_PAGE < products.length) {
+      setStartIndex((prev) => prev + ITEMS_PER_PAGE);
     }
   };
 
   const handlePrev = () => {
-    if (startIndex - itemsPerPage >= 0) {
-      setStartIndex((prev) => prev - itemsPerPage);
+    if (startIndex - ITEMS_PER_PAGE >= 0) {
+      setStartIndex((prev) => prev - ITEMS_PER_PAGE);
     }
   };
+
+  const pageIndex = startIndex / ITEMS_PER_PAGE;
 
   return (
     <div className="mt-16 ">
@@ -45,7 +50,7 @@ const RelatedProduct = ({ category }: Props) => {
         <div
           className="flex gap-10 transition-transform duration-500 ease-in-out"
           style={{
-            transform: `translateX(-${(startIndex / itemsPerPage) * 100}%)`,
+            transform: `translateX(calc(-${pageIndex * 100}% - ${pageIndex * 40}px))`,
           }}
         >
           {products.map((product, actualIndex) => {
@@ -55,7 +60,7 @@ const RelatedProduct = ({ category }: Props) => {
             return (
               <div
                 key={`${product._id}-${actualIndex}`}
-                className={`${spaceMono.className} text-center w-[calc(25%-30px)] shrink-0`}
+                className={`${spaceMono.className} text-center w-[calc((100%-120px)/4)] shrink-0`}
               >
                 <Link
                   href={`/products/${product._id}/${product.name
@@ -65,12 +70,13 @@ const RelatedProduct = ({ category }: Props) => {
                   onMouseEnter={() => setHoveredIndex(actualIndex)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <div className="related overflow-hidden relative">
+                  <div className="relative aspect-[3/2] w-full overflow-hidden">
                     <Image
                       src={product.image}
                       alt={product.name}
-                      height={600}
-                      width={600}
+                      fill
+                      className="object-cover"
+                      priority={true}
                     />
                     {/* Left Arrow with Fade & Slide animation on hover */}
                     {hoveredIndex === actualIndex &&
@@ -93,7 +99,7 @@ const RelatedProduct = ({ category }: Props) => {
 
                     {hoveredIndex === actualIndex &&
                       isLastInView &&
-                      startIndex + itemsPerPage < products.length && (
+                      startIndex + ITEMS_PER_PAGE < products.length && (
                         <button
                           onClick={(e) => {
                             e.preventDefault();

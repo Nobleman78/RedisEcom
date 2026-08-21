@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+
+
 export async function loginAction(formData: FormData){
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -16,7 +18,7 @@ export async function loginAction(formData: FormData){
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -81,7 +83,7 @@ export async function signupAction(formData: FormData): Promise<void> {
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/signup", {
+    const res = await fetch("http://localhost:3000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -135,6 +137,7 @@ export async function signupAction(formData: FormData): Promise<void> {
 export async function logoutAction(): Promise<void> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value ?? "";
+  const supabase = await createClient();
 
   try {
     await fetch("http://localhost:5000/api/auth/logout", {
@@ -148,6 +151,8 @@ export async function logoutAction(): Promise<void> {
   } catch {
     // Even if backend fails, still clear cookies
   }
+
+  await supabase.auth.signOut();
 
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");

@@ -1,4 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createBrowserClient } from "@supabase/ssr";
 
 export interface CartItem {
   id: string;
@@ -22,13 +23,72 @@ const parseResponse = async (res: Response) => {
   return (await res.json()) as FetchCartResponse;
 };
 
+let backendSessionReady = false;
+let backendSessionRequest: Promise<boolean> | null = null;
+
+const ensureBackendSession = async () => {
+  if (backendSessionReady) {
+    return true;
+  }
+
+  if (backendSessionRequest) {
+    return backendSessionRequest;
+  }
+
+  backendSessionRequest = (async () => {
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+      return false;
+  }
+
+  const bridgeResponse = await fetch("/api/auth/google-login", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+
+    backendSessionReady = bridgeResponse.ok;
+    return bridgeResponse.ok;
+  })();
+
+  try {
+    return await backendSessionRequest;
+  } finally {
+    backendSessionRequest = null;
+  }
+};
+
+const requestCart = async (input: RequestInfo | URL, init?: RequestInit) => {
+  await ensureBackendSession();
+  let response = await fetch(input, init);
+
+  if (response.status !== 401) {
+    return response;
+  }
+
+  backendSessionReady = false;
+  if (await ensureBackendSession()) {
+    response = await fetch(input, init);
+  }
+  return response;
+};
+
 export const fetchCart = createAsyncThunk<
   FetchCartResponse,
   void,
   { rejectValue: string }
 >("cart/fetch", async (_, { rejectWithValue }) => {
   try {
-    const res = await fetch("/api/cart", {
+    const res = await requestCart("/api/cart", {
       credentials: "include",
     });
     return await parseResponse(res);
@@ -49,7 +109,7 @@ export const addToCart = createAsyncThunk<
   { rejectValue: string }
 >("cart/add", async (payload, { rejectWithValue }) => {
   try {
-    const res = await fetch("/api/cart", {
+    const res = await requestCart("/api/cart", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -73,7 +133,7 @@ export const updateCartQuantity = createAsyncThunk<
   { rejectValue: string }
 >("cart/updateQuantity", async ({ productId, quantity }, { rejectWithValue }) => {
   try {
-    const res = await fetch(`/api/cart/${productId}`, {
+    const res = await requestCart(`/api/cart/${productId}`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -97,7 +157,7 @@ export const removeCartItem = createAsyncThunk<
   { rejectValue: string }
 >("cart/remove", async ({ productId }, { rejectWithValue }) => {
   try {
-    const res = await fetch("/api/cart", {
+    const res = await requestCart("/api/cart", {
       method: "DELETE",
       credentials: "include",
       headers: {

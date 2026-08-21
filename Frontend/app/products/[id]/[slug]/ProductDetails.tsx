@@ -33,7 +33,7 @@ const ProductDetails = ({
   const [openTerm, setOpenTerm] = useState<keyof typeof terms | null>(null);
 
   const isSelectedSize = userSelectedSize ?? (size.length > 0 ? size[0] : null);
-  
+
   const handleOpenTermsForShippingAndTax = (term: keyof typeof terms) => {
     setOpenTerm((prev) => (prev === term ? null : term));
   };
@@ -60,7 +60,13 @@ const ProductDetails = ({
     <div className="border-b border-gray-300 py-5">
       <div className="max-w-6xl mx-auto flex flex-row gap-20 my-10 ">
         <div>
-          <Image src={image} alt={name} height={1000} width={1000} />
+          <Image
+            src={image}
+            alt={name}
+            height={1000}
+            width={1000}
+            priority={true}
+          />
         </div>
         <div className={`${spaceMono.className}`}>
           <h2 className="text-2xl mb-2">{name}</h2>

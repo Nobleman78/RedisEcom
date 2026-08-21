@@ -2,6 +2,7 @@ import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FiX } from "react-icons/fi";
 import { searchProducts } from "../../feature/redux/product/productApi";
 
 interface Product {
@@ -43,7 +44,7 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
       setProducts(data.products ?? []);
       setHasSearched(true);
       setError("");
-    } catch (err: unknown) {
+    } catch {
       setProducts([]);
       setHasSearched(true);
       setError("Can not load result");
@@ -59,7 +60,7 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
   }, [term, runSearch]);
 
   return (
-    <div className="w-full">
+    <div className="w-full flex items-center justify-between">
       <input
         type="text"
         value={term}
@@ -78,9 +79,14 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
             setError("");
           }
         }}
-        placeholder="Search products..."
-        aria-label="Search products"
+        placeholder="SEARCH PRODUCTS..."
         className={`w-full px-4 py-3 text-white outline-none ${spaceMono.className}`}
+      />
+      {/* Cross button */}
+      <FiX
+        onClick={() => onProductSelect?.()}
+        size={24}
+        className="cursor-pointer "
       />
 
       {/* Search Results */}
@@ -147,7 +153,7 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
               {products.length > 8 && (
                 <div className="flex justify-center mt-10 pb-6">
                   <Link
-                    href="/collections/products"
+                    href={`/search?q=${encodeURIComponent(term)}`}
                     onClick={() => onProductSelect?.()}
                     className={`${spaceMono.className} bg-white text-black px-5 py-2`}
                   >

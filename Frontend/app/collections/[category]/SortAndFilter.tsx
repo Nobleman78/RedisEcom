@@ -15,7 +15,6 @@ interface Props {
   totalProducts: number;
 }
 
-// demo products types
 const demoProductsTypes = [
   "Gift Card",
   "Headwear",
@@ -29,12 +28,10 @@ export default function SortAndFilter({ totalProducts }: Props) {
   const [openSortOption, setOpenSortOption] = useState(false);
   const [openFilterOption, setOpenFilterOption] = useState(false);
   const [openProductType, setOpenProductType] = useState(false);
-  // const [openBrand, setOpenBrand] = useState(false);
   const [openSize, setOpenSize] = useState(false);
   const [selectFilterKey, setSelectFilterKey] = useState<string[]>([]);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-
   const wrapperRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -51,11 +48,8 @@ export default function SortAndFilter({ totalProducts }: Props) {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openSortOption]);
-
-  // handle click outiside to close the filter
 
   useEffect(() => {
     function handleClickOutsideFilter(e: MouseEvent) {
@@ -72,29 +66,18 @@ export default function SortAndFilter({ totalProducts }: Props) {
       document.removeEventListener("mousedown", handleClickOutsideFilter);
   }, [openFilterOption]);
 
-  // event handler for filter option
   const handleFilter = () => {
     setOpenFilterOption(!openFilterOption);
   };
 
-  // open demo products types
   const handleOpenDemoProductType = () => {
     setOpenProductType(!openProductType);
   };
 
-  // open brand
-  // const handleOpenBrand = () => {
-  //   setOpenBrand(!openBrand);
-  // };
-
-  // open size
   const handleOpenSize = () => {
     setOpenSize(!openSize);
   };
 
-  // First of all selectfilter key
-
-  // Now i have to store all the filter key like i have select gift card, brand and size
   const handleSelectFilterKey = (key: string) => {
     setSelectFilterKey((prev) =>
       prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
@@ -146,7 +129,7 @@ export default function SortAndFilter({ totalProducts }: Props) {
           {sortOptions.map((option) => (
             <div key={option}>
               <button
-                className={`${spaceMono.className} py-1 text-gray-500 hover:text-black  cursor-pointer`}
+                className={`${spaceMono.className} py-1 text-gray-500 hover:text-black cursor-pointer`}
               >
                 {option}
               </button>
@@ -155,12 +138,16 @@ export default function SortAndFilter({ totalProducts }: Props) {
         </div>
       )}
 
-      {/*  This is for filter option */}
-
+      {/* Filter Drawer */}
       <aside
         ref={filterRef}
-        className={`fixed right-0 top-0 z-100 flex h-full w-full max-w-md flex-col  bg-white text-black shadow-2xl transition-all duration-300  ${openFilterOption ? "translate-x-0 opacity-100" : "translate-x-full pointer-events-none opacity-0"}`}
+        className={`fixed right-0 top-0 z-100 flex h-full w-full max-w-md flex-col bg-white text-black shadow-2xl transition-all duration-300 ${
+          openFilterOption
+            ? "translate-x-0 opacity-100"
+            : "translate-x-full pointer-events-none opacity-0"
+        }`}
       >
+        {/* Drawer Header */}
         <div className="flex items-center justify-between border-b border-gray-300 p-6">
           <h2 className={`${spaceMono.className} uppercase text-lg`}>
             Filters
@@ -171,10 +158,9 @@ export default function SortAndFilter({ totalProducts }: Props) {
           />
         </div>
 
-        {/* Product type, brand , size */}
-        <div className="p-6 mt-5">
+        {/* Scrollable Filter Content */}
+        <div className="flex-1 overflow-y-auto p-6">
           <div>
-            {/* Header Toggle */}
             <div
               onClick={handleOpenDemoProductType}
               className="flex items-center justify-between w-full cursor-pointer py-3 transition-all duration-300 select-none"
@@ -192,7 +178,6 @@ export default function SortAndFilter({ totalProducts }: Props) {
               />
             </div>
 
-            {/* Animated Filter Content */}
             <div
               className={`grid transition-all duration-300 ease-in-out ${
                 openProductType
@@ -225,43 +210,8 @@ export default function SortAndFilter({ totalProducts }: Props) {
               </div>
             </div>
           </div>
-          {/* Brand */}
-          {/* <div
-            onClick={handleOpenBrand}
-            className="flex items-start justify-between border-t border-gray-300 py-5 cursor-pointer w-full"
-          >
-            <button
-              onClick={() => handleSelectFilterKey("Never Never")}
-              className={`${spaceMono.className} uppercase cursor-pointer`}
-            >
-              Brand
-            </button>
-            <MdOutlineKeyboardArrowDown size={20} className="text-gray-500" />
-          </div> */}
-          {/* {openBrand && (
-            <div>
-              <button
-                className={`${spaceMono.className} mb-5 cursor-pointer text-gray-500 hover:text-black flex items-center gap-2`}
-              >
-                <span
-                  className={`rounded-full transition-all duration-200 ${
-                    selectFilterKey.includes("Never Never")
-                      ? "w-1.5 h-1.5 bg-gray-700 opacity-100 scale-100"
-                      : "w-0 h-1.5 opacity-0 scale-0"
-                  }`}
-                />
-                <span
-                  className={`transition-colors duration-200 ${
-                    selectFilterKey.includes("Never Never") ? "text-black" : ""
-                  }`}
-                >
-                  NEVER NEVER (22)
-                </span>
-              </button>
-            </div>
-          )} */}
+
           <div>
-            {/* Header Toggle */}
             <div
               onClick={handleOpenSize}
               className="flex items-center justify-between border-t border-gray-300 py-5 cursor-pointer select-none"
@@ -279,7 +229,6 @@ export default function SortAndFilter({ totalProducts }: Props) {
               />
             </div>
 
-            {/* Animated Filter Content */}
             <div
               className={`grid transition-all duration-300 ease-in-out ${
                 openSize
@@ -320,6 +269,15 @@ export default function SortAndFilter({ totalProducts }: Props) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Fixed Footer with View Results Button */}
+        <div className="border-t border-gray-200 p-6 bg-white">
+          <button
+            className={`${spaceMono.className} w-full uppercase bg-black text-white py-3 cursor-pointer hover:bg-gray-800 transition-colors`}
+          >
+            View Results
+          </button>
         </div>
       </aside>
     </>

@@ -19,12 +19,15 @@ export default function ProductGrid({ products }: Props) {
             .toLowerCase()}`}
           className={`text-center ${spaceMono.className}`}
         >
-          <Image
-            src={product.image}
-            width={600}
-            height={400}
-            alt={product.name}
-          />
+          <div className="relative aspect-[3/2] w-full overflow-hidden">
+            <Image
+              src={product.image}
+              fill
+              alt={product.name}
+              className="object-cover"
+              priority={true}
+            />
+          </div>
 
           <div className="mt-2">
             <h2>{product.name}</h2>
