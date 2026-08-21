@@ -1,4 +1,4 @@
-import Subscriber from "../model/subscriber.model";
+import Subscriber from "../model/subscriber.model.js";
 
 export const subscribe = async (req, res) => {
   const { email } = req.body;
