@@ -132,14 +132,14 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
                     key={p._id}
                     onClick={() => onProductSelect?.()}
                   >
-                    <Image
-                      src={p.image}
-                      alt={p.name}
-                      width={600}
-                      height={400}
-                      className="w-full h-auto"
-                    />
-
+                    <div className="relative aspect-[3/2] w-full">
+                      <Image
+                        src={p.image}
+                        alt={p.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                     <div
                       className={`${spaceMono.className} flex flex-col mt-5`}
                     >

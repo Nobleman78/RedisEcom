@@ -75,6 +75,7 @@ const RelatedProduct = ({ category }: Props) => {
                       src={product.image}
                       alt={product.name}
                       fill
+                      sizes="(max-width: 768px) 80vw, 25vw"
                       className="object-cover"
                       priority={true}
                     />

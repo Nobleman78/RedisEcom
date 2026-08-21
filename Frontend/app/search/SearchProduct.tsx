@@ -90,23 +90,24 @@ const SearchProduct = ({ query }: SearchProductProps) => {
                 {uniqueCategories.map((category) => (
                   <button
                     key={category}
-                    className={`${spaceMono.className} text-left w-full capitalize`}
+                    className={`${spaceMono.className} text-left w-full capitalize cursor-pointer text-gray-600 hover:text-black`}
                   >
                     {category}
                   </button>
                 ))}
               </div>
+
               {/* Size div */}
 
-              <div className="flex flex-row items-center justify-between cursor-pointer border-t border-gray-300">
-                <h3 className={`${spaceMono.className} uppercase text-lg`}>
+              <div className="flex flex-row items-center justify-between cursor-pointer border-t border-gray-300 mt-5">
+                <h3 className={`${spaceMono.className} uppercase text-lg my-3`}>
                   Size
                 </h3>
                 <MdOutlineKeyboardArrowDown />
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col   ">
                 {uniqueProductSize.map((size, index) => (
-                  <button key={index}>{size}</button>
+                  <button className={`${spaceMono.className} text-start text-gray-600 hover:text-black cursor-pointer`} key={index}>{size} (0)</button>
                 ))}
               </div>
             </aside>
