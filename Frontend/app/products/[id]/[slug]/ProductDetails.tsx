@@ -60,7 +60,7 @@ const ProductDetails = ({
   return (
     <div className="border-b border-gray-300 py-5">
       <div className="max-w-6xl mx-auto flex flex-row gap-20 my-10 ">
-        <div className="relative aspect-[3/2] w-full overflow-hidden">
+        <div className="relative aspect-3/2 w-full self-start overflow-hidden">
           <Image
             src={image}
             alt={name}
