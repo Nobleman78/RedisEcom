@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Product } from "@/types/product";
-import { searchProducts, getProductByIdApi, getCategoriesApi, getProductByCategory } from "./productApi";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getCategoriesApi, getProductByCategory, getProductByIdApi, searchProducts } from "./productApi";
 
 export interface FetchProductsArgs {
   search?: string;
@@ -142,6 +142,7 @@ const productSlice = createSlice({
       .addCase(fetchProductById.pending, (state) => {
         state.status = "loading";
         state.error = null;
+        state.singleProduct = null;
       })
       .addCase(fetchProductById.fulfilled, (state, action) => {
         state.status = "succeeded";

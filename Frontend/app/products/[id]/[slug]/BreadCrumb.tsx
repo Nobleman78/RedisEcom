@@ -10,7 +10,7 @@ interface Props {
 const BreadCrumb = ({ category, name }: Props) => {
   return (
     <div
-      className={`${spaceMono.className} flex flex-row  items-center gap-2 max-w-6xl mx-auto`}
+      className={`${spaceMono.className} flex flex-row  items-center gap-2 pt-5 max-w-6xl mx-auto`}
     >
       <Link className="hover:underline" href="/">
         Home

@@ -7,6 +7,8 @@ export interface CartItem {
   price: number;
   quantity: number;
   img: string;
+  size: string | null;
+  productId: string;
 }
 
 export interface FetchCartResponse {
@@ -81,7 +83,7 @@ const requestCart = async (input: RequestInfo | URL, init?: RequestInit) => {
   }
   return response;
 };
-
+// fetch the cart
 export const fetchCart = createAsyncThunk<
   FetchCartResponse,
   void,
@@ -102,10 +104,10 @@ export const fetchCart = createAsyncThunk<
 });
 
 
-
+// add to cart
 export const addToCart = createAsyncThunk<
   FetchCartResponse,
-  { productId: string; quantity: number },
+  { productId: string; quantity: number; size?: string | null },
   { rejectValue: string }
 >("cart/add", async (payload, { rejectWithValue }) => {
   try {
@@ -126,12 +128,12 @@ export const addToCart = createAsyncThunk<
     );
   }
 });
-
+// update the cart quantity
 export const updateCartQuantity = createAsyncThunk<
   FetchCartResponse,
-  { productId: string; quantity: number },
+  { productId: string; quantity: number; size?: string | null },
   { rejectValue: string }
->("cart/updateQuantity", async ({ productId, quantity }, { rejectWithValue }) => {
+>("cart/updateQuantity", async ({ productId, quantity, size = null }, { rejectWithValue }) => {
   try {
     const res = await requestCart(`/api/cart/${productId}`, {
       method: "PUT",
@@ -139,7 +141,7 @@ export const updateCartQuantity = createAsyncThunk<
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ quantity }),
+      body: JSON.stringify({ quantity, size }),
     });
     return await parseResponse(res);
   } catch (err) {
@@ -150,12 +152,12 @@ export const updateCartQuantity = createAsyncThunk<
     );
   }
 });
-
+// remove cart item
 export const removeCartItem = createAsyncThunk<
   FetchCartResponse,
-  { productId: string },
+  { productId: string; size?: string | null },
   { rejectValue: string }
->("cart/remove", async ({ productId }, { rejectWithValue }) => {
+>("cart/remove", async ({ productId, size = null }, { rejectWithValue }) => {
   try {
     const res = await requestCart("/api/cart", {
       method: "DELETE",
@@ -163,7 +165,7 @@ export const removeCartItem = createAsyncThunk<
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ productId }),
+      body: JSON.stringify({ productId, size }),
     });
     return await parseResponse(res);
   } catch (err) {

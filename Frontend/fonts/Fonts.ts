@@ -26,3 +26,13 @@ export const Nimbus = localFont({
   display: "swap",
   fallback: ["sans-serif"],
 });
+export const Eurostil = localFont({
+  src:[
+    {
+      path:"./Helvetica.otf",
+      style:"bold",
+      weight:"900"
+
+    }
+  ]
+})

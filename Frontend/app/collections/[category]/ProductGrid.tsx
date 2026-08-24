@@ -32,7 +32,7 @@ export default function ProductGrid({ products }: Props) {
           <div className="mt-2">
             <h2>{product.name}</h2>
 
-            <h3>${product.price}</h3>
+            <h3>${product.price.toFixed(2)}</h3>
           </div>
         </Link>
       ))}

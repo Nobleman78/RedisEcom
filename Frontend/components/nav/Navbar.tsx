@@ -1,12 +1,13 @@
 "use client";
 import { logoutAction } from "@/app/actions/auth";
-import { michroma, Nimbus, spaceMono } from "@/fonts/Fonts";
+import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
 
 import {
   fetchCart,
   removeCartItem,
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
+import type { CartItem } from "@/feature/redux/cart/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { createBrowserClient } from "@supabase/ssr";
 import Image from "next/image";
@@ -23,13 +24,12 @@ interface UserProfile {
   email: string;
   role: string;
 }
-
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const cartCount = useAppSelector((state) => state.cart.totalQuantity);
-  const cartItems = useAppSelector((state) => state.cart.cartItems);
+  const cartItems: CartItem[] = useAppSelector((state) => state.cart.cartItems);
   const [user, setUser] = useState<UserProfile | null>(null);
 
   // Fetch profile whenever the route changes, so login redirects update Navbar state.
@@ -251,13 +251,17 @@ const Navbar = () => {
     setActiveDropdown((prev) => (prev === label ? null : label));
   };
 
-  const handleQuantityChange = (id: string, quantity: number) => {
+  const handleQuantityChange = (
+    productId: string,
+    quantity: number,
+    size: string | null,
+  ) => {
     if (quantity <= 0) {
-      dispatch(removeCartItem({ productId: id }));
+      dispatch(removeCartItem({ productId, size }));
       return;
     }
 
-    dispatch(updateCartQuantity({ productId: id, quantity }));
+    dispatch(updateCartQuantity({ productId, quantity, size }));
   };
 
   return (
@@ -284,7 +288,7 @@ const Navbar = () => {
         <Link
           href="/"
           onClick={() => router.push("/")}
-          className={`${michroma.className} cursor-pointer text-3xl`}
+          className={`${Eurostil.className} cursor-pointer text-4xl`}
         >
           NEVER NEVER
         </Link>
@@ -572,11 +576,11 @@ const Navbar = () => {
             />
           </button>
         </div>
-
-        <div className="flex-1 overflow-y-auto border-b border-gray-600 p-6">
+        {/* carts items section */}
+        <div className="flex-1 overflow-y-auto border-b border-gray-600 p-6 ">
           {cartItems.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {cartItems.map((item) => (
+              {cartItems.map((item: CartItem) => (
                 <div
                   key={item.id}
                   className="flex items-start justify-between gap-4  pb-4"
@@ -597,40 +601,61 @@ const Navbar = () => {
                       >
                         {item.name}
                       </p>
-                      <div className="mt-2 flex items-center gap-2">
+                      <p
+                        className={`${spaceMono.className} text-white text-xs py-2`}
+                      >
+                        {" "}
+                        {item.size}
+                      </p>
+                      <div className="flex flex-row items-center gap-5">
+                        <div className="mt-2 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleQuantityChange(
+                                item.productId,
+                                item.quantity - 1,
+                                item.size,
+                              )
+                            }
+                            className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
+                          >
+                            -
+                          </button>
+                          <span
+                            className={`${spaceMono.className} text-sm text-white`}
+                          >
+                            {item.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleQuantityChange(
+                                item.productId,
+                                item.quantity + 1,
+                                item.size,
+                              )
+                            }
+                            className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
+                          >
+                            +
+                          </button>
+                        </div>
                         <button
                           type="button"
                           onClick={() =>
-                            handleQuantityChange(item.id, item.quantity - 1)
+                            dispatch(
+                              removeCartItem({
+                                productId: item.productId,
+                                size: item.size,
+                              }),
+                            )
                           }
-                          className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
+                          className={`${spaceMono.className} mt-2 text-left text-xs uppercase cursor-pointer underline text-white`}
                         >
-                          -
-                        </button>
-                        <span
-                          className={`${spaceMono.className} text-sm text-white`}
-                        >
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity + 1)
-                          }
-                          className="flex h-7 w-7 items-center justify-center border border-gray-600 text-white"
-                        >
-                          +
+                          Remove
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          dispatch(removeCartItem({ productId: item.id }))
-                        }
-                        className={`${spaceMono.className} mt-2 text-left text-xs uppercase cursor-pointer underline text-white`}
-                      >
-                        Remove
-                      </button>
                     </div>
                   </div>
                   <p className={`${spaceMono.className} text-sm text-white`}>
@@ -665,7 +690,12 @@ const Navbar = () => {
                 onClick={closeCart}
                 className={`flex w-full items-center justify-center  bg-black py-3 text-sm font-semibold uppercase tracking-[0.2em]  transition hover:bg-gray-300 ${spaceMono.className} bg-white`}
               >
-                CHECKOUT
+                {`CHECKOUT $${cartItems
+                  .reduce(
+                    (total, item) => total + item.price * item.quantity,
+                    0,
+                  )
+                  .toFixed(2)}`}
               </Link>
             </div>
           </div>

@@ -52,6 +52,7 @@ const ProductDetails = ({
       addToCart({
         productId: id,
         quantity: productItem,
+        size: isSelectedSize,
       }),
     );
   };
@@ -59,20 +60,20 @@ const ProductDetails = ({
   return (
     <div className="border-b border-gray-300 py-5">
       <div className="max-w-6xl mx-auto flex flex-row gap-20 my-10 ">
-        <div>
+        <div className="relative aspect-[3/2] w-full overflow-hidden">
           <Image
             src={image}
             alt={name}
-            height={1000}
-            width={1000}
-            priority={true}
+            fill
+            className="object-cover"
+            priority
           />
         </div>
         <div className={`${spaceMono.className}`}>
           <h2 className="text-2xl mb-2">{name}</h2>
           <div className="flex flex-row items-center gap-3">
             <p className="text-xl mb-1 text-red-400">
-              ${(price * discount) / 100}
+              ${((price * discount) / 100).toFixed(2)}
             </p>
             <p className="text-lg line-through text-gray-500 mb-1 ">${price}</p>
           </div>

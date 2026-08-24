@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-    addToCart,
-    fetchCart,
-    removeCartItem,
-    updateCartQuantity,
+  addToCart,
+  fetchCart,
+  removeCartItem,
+  updateCartQuantity,
 } from "./cartApi";
 
 export interface CartItem {
@@ -12,11 +12,15 @@ export interface CartItem {
   price: number;
   quantity: number;
   img: string;
+  size: string | null;
+  productId: string;
 }
 
 export interface CartState {
   cartItems: CartItem[];
   totalPrice: number;
+  shipping: number;
+  totalAmount: number;
   totalQuantity: number;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
@@ -25,6 +29,8 @@ export interface CartState {
 const initialState: CartState = {
   cartItems: [],
   totalPrice: 0,
+  shipping: 0,
+  totalAmount: 0,
   totalQuantity: 0,
   status: "idle",
   error: null,
@@ -40,6 +46,8 @@ const updateCartState = (
 ) => {
   state.cartItems = payload.cartItems ?? [];
   state.totalPrice = payload.totalPrice ?? 0;
+  state.shipping = state.cartItems.length > 0 ? 10 : 0;
+  state.totalAmount = state.totalPrice + state.shipping;
   state.totalQuantity = payload.totalQuantity ?? 0;
   state.status = "succeeded";
   state.error = null;
