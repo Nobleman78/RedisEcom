@@ -2,20 +2,26 @@ import Product from "../model/product.model.js";
 
 const formatCartResponse = async (user) => {
   const products = await Product.find({
-    _id: { $in: user.cartItems.map((item) => item.product) }
-  })
+    _id: { $in: user.cartItems.map((item) => item.product) },
+  });
 
-  const cartItems = products.map((product) => {
-    const cartItem = user.cartItems.find(
-      (item) => item.product.toString() === product._id.toString(),
+  const cartItems = user.cartItems.flatMap((cartItem) => {
+    const product = products.find(
+      (item) => item._id.toString() === cartItem.product.toString(),
     );
 
+    if (!product) {
+      return [];
+    }
+
     return {
-      id: product._id.toString(),
+      id: `${product._id.toString()}-${cartItem.size ?? "no-size"}`,
+      productId: product._id.toString(),
       name: product.name,
       price: product.price,
-      quantity: cartItem?.quantity ?? 1,
+      quantity: cartItem.quantity ?? 1,
       img: product.image,
+      size: cartItem.size ?? null,
     };
   });
 
@@ -23,7 +29,6 @@ const formatCartResponse = async (user) => {
     (total, item) => total + item.quantity,
     0,
   );
-
 
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -35,17 +40,21 @@ const formatCartResponse = async (user) => {
 
 export const addToCart = async (req, res) => {
   try {
-    const { productId, quantity = 1 } = req.body;
+    const { productId, quantity = 1, size = null } = req.body;
     const user = req.user;
 
     const existingCartItem = user.cartItems.find(
-      (item) => item.product.toString() === productId,
+      (item) => item.product.toString() === productId && item.size === size,
     );
 
     if (existingCartItem) {
       existingCartItem.quantity += quantity;
     } else {
-      user.cartItems.push({ product: productId, quantity });
+      user.cartItems.push({
+        product: productId,
+        size,
+        quantity,
+      });
     }
 
     await user.save();
@@ -59,14 +68,15 @@ export const addToCart = async (req, res) => {
 // remove all items from cart or a single product
 export const removeAllFromCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, size = null } = req.body;
     const user = req.user;
 
     if (!productId) {
       user.cartItems = [];
     } else {
       user.cartItems = user.cartItems.filter(
-        (item) => item.product.toString() !== productId,
+        (item) =>
+          item.product.toString() !== productId || (item.size ?? null) !== size,
       );
     }
 
@@ -92,11 +102,11 @@ export const getCartItems = async (req, res) => {
 export const updateQuantity = async (req, res) => {
   try {
     const { id } = req.params;
-    const { quantity } = req.body;
+    const { quantity, size = null } = req.body;
     const user = req.user;
 
     const cartItem = user.cartItems.find(
-      (item) => item.product.toString() === id,
+      (item) => item.product.toString() === id && (item.size ?? null) === size,
     );
 
     if (!cartItem) {
@@ -105,7 +115,8 @@ export const updateQuantity = async (req, res) => {
 
     if (quantity === 0) {
       user.cartItems = user.cartItems.filter(
-        (item) => item.product.toString() !== id,
+        (item) =>
+          item.product.toString() !== id || (item.size ?? null) !== size,
       );
     } else {
       cartItem.quantity = quantity;

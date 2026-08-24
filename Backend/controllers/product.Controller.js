@@ -1,5 +1,5 @@
-import Product from "../model/product.model.js";
 import { redis } from "../lib/redis.js";
+import Product from "../model/product.model.js";
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // get all products
@@ -15,7 +15,9 @@ export const getAllProducts = async (req, res) => {
       ];
     }
     if (category) {
-      filter.category = { $regex: new RegExp(`^${escapeRegex(category)}$`, "i") };
+      filter.category = {
+        $regex: new RegExp(`^${escapeRegex(category)}$`, "i"),
+      };
     }
     const skip = (Number(page) - 1) * Number(limit);
     const [products, total] = await Promise.all([
@@ -46,11 +48,20 @@ export const getCategories = async (req, res) => {
 // get product by ID
 export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const { id } = req.params;
+    const cacheKey = `product:${id}`;
+
+    const cacheProduct = await redis.get(cacheKey);
+    if (cacheProduct) {
+      return res.status(200).json(JSON.parse(cacheProduct));
+    }
+    const product = await Product.findById(id).lean();
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.json(product);
+
+    await redis.set(cacheKey, JSON.stringify(product), "EX", 3600);
+    return res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -148,10 +159,7 @@ export const getRecommendedProducts = async (req, res) => {
 // get product by category
 export const getProductsByCategory = async (req, res) => {
   let { category } = req.params;
-  category = category
-    .replace(/-/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  category = category.replace(/-/g, " ").replace(/\s+/g, " ").trim();
 
   try {
     const products = await Product.find({
