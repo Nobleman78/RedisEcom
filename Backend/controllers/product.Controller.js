@@ -89,24 +89,36 @@ export const getFeaturedProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, price, description, image, category, isFeatured } = req.body;
-    let cloudinaryResponse = null;
+
+    let imageUrl = "";
+
     if (image) {
-      cloudinaryResponse = await cloudinary.uploader.upload(image, {
-        folder: "products",
-      });
+      // 1. Convert base64/data URL → Blob
+      const response = await fetch(image);
+      const imageBlob = await response.blob();
+
+      const cloudinaryResponse = await cloudinary.uploader.upload(image);
+      imageUrl = cloudinaryResponse.secure_url;
     }
+
+    // 5. Save product in MongoDB
     const product = await Product.create({
       name,
       price,
       description,
-      image: cloudinaryResponse?.secure_url
-        ? cloudinaryResponse.secure_url
-        : "",
+      image: imageUrl,
       category,
+      isFeatured,
     });
-    res.status(201).json({ message: "Product created successfully", product });
+
+    res.status(201).json({
+      message: "Product created successfully",
+      product,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
