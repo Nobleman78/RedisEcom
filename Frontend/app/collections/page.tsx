@@ -23,11 +23,11 @@ const Page = () => {
     "bg-purple-300",
   ];
   return (
-    <div className="mt-40  py-10 mx-10">
+    <div className="mt-20 md:mt-40 py-10 mx-4 md:mx-10">
       <p className={`${spaceMono.className} uppercase text-center text-2xl`}>
         All Collections
       </p>
-      <div className="mt-8 flex flex-col gap-3 grid grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {categoris.map((category, index) => (
           <Link
             key={index}

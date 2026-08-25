@@ -62,8 +62,8 @@ const SearchProduct = ({ query }: SearchProductProps) => {
   );
 
   return (
-    <div className="mt-40 mx-12">
-      <p className={`${spaceMono.className} text-center uppercase text-3xl`}>
+    <div className="mt-24 md:mt-40 mx-4 md:mx-12 mb-10">
+      <p className={`${spaceMono.className} text-center uppercase text-2xl md:text-3xl`}>
         search
       </p>
       <p className={`${spaceMono.className} text-center mt-5`}>
@@ -77,8 +77,8 @@ const SearchProduct = ({ query }: SearchProductProps) => {
         </p>
       ) : (
         !loading && (
-          <div className="flex flex-row gap-8">
-            <aside className="w-1/6 flex flex-col gap-4 mt-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <aside className="w-full lg:w-1/6 flex flex-col gap-4 mt-8">
               <div className="flex flex-row items-center justify-between cursor-pointer">
                 <h3 className={`${spaceMono.className} uppercase text-lg`}>
                   Product Type
@@ -111,7 +111,7 @@ const SearchProduct = ({ query }: SearchProductProps) => {
                 ))}
               </div>
             </aside>
-            <div className="w-3/3">
+            <div className="w-full lg:w-5/6">
               <ProductGrid products={products} />
             </div>
           </div>

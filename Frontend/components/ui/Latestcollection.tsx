@@ -44,10 +44,10 @@ const Latestcollection = () => {
       </h2>
 
       {/* Outer Viewport */}
-      <div className="relative mx-15 my-10 overflow-hidden">
+      <div className="relative mx-4 md:mx-15 my-10 overflow-hidden">
         {/* Animated Sliding Track */}
         <div
-          className="flex gap-10 transition-transform duration-500 ease-in-out"
+          className="flex gap-4 md:gap-10 transition-transform duration-500 ease-in-out overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none max-md:[transform:none!important] [&::-webkit-scrollbar]:hidden"
           style={{
             // Shift by 100% of the container width PLUS 40px (gap-10) per page
             transform: `translateX(calc(-${pageIndex * 100}% - ${pageIndex * 40}px))`,
@@ -60,7 +60,7 @@ const Latestcollection = () => {
             return (
               <div
                 key={actualIndex}
-                className="w-[calc((100%-120px)/4)] shrink-0"
+                className="w-[85vw] sm:w-[calc(50%-1rem)] md:w-[calc((100%-120px)/4)] shrink-0 snap-center md:snap-align-none"
               >
                 <Link
                   href={`/products/${item._id}/${item.name
@@ -88,7 +88,7 @@ const Latestcollection = () => {
                             e.preventDefault();
                             handlePrev();
                           }}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-xl z-10 transition-all duration-300 animate-fadeIn"
+                          className="hidden md:block absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-xl z-10 transition-all duration-300 animate-fadeIn"
                         >
                           <MdKeyboardArrowLeft
                             size={22}
@@ -106,7 +106,7 @@ const Latestcollection = () => {
                             e.preventDefault();
                             handleNext();
                           }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-xl z-10 transition-all duration-300 animate-fadeIn"
+                          className="hidden md:block absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-xl z-10 transition-all duration-300 animate-fadeIn"
                         >
                           <MdKeyboardArrowRight
                             size={22}

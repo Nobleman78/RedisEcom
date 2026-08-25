@@ -9,19 +9,20 @@ interface Props {
 
 const BreadCrumb = ({ category, name }: Props) => {
   return (
-    <div
-      className={`${spaceMono.className} flex flex-row  items-center gap-2 pt-5 max-w-6xl mx-auto`}
+    <nav
+      aria-label="Breadcrumb"
+      className={`${spaceMono.className} flex flex-wrap items-center gap-2 pt-5 max-w-6xl mx-auto px-4 md:px-8 text-sm text-gray-500`}
     >
-      <Link className="hover:underline" href="/">
+      <Link className="hover:text-black transition-colors" href="/">
         Home
       </Link>
-      <MdKeyboardArrowRight className="text-gray-400" />
-      <Link className="hover:underline" href={`/collections/${category}`}>
+      <MdKeyboardArrowRight className="text-gray-400 shrink-0" />
+      <Link className="hover:text-black transition-colors capitalize" href={`/collections/${category}`}>
         {category}
       </Link>
-      <MdKeyboardArrowRight className="text-gray-400" />
-      <h2 className="">{name}</h2>
-    </div>
+      <MdKeyboardArrowRight className="text-gray-400 shrink-0" />
+      <h2 className="text-black font-medium">{name}</h2>
+    </nav>
   );
 };
 

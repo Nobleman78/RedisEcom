@@ -4,7 +4,7 @@ const Overview = () => {
   return (
     <div>
       {/* Text */}
-      <div className="max-w-5xl mx-auto mt-20 text-center">
+      <div className="max-w-5xl mx-auto mt-10 md:mt-20 text-center px-4">
         <p className={`${spaceMono.className}`}>
           Never Never is a men’s streetwear clothing store based in Belfast and
           all of our stock is available to be shipped worldwide. We are

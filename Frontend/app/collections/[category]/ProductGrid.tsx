@@ -9,7 +9,7 @@ interface Props {
 
 export default function ProductGrid({ products }: Props) {
   return (
-    <section className="grid grid-cols-3 mx-10 my-10 gap-10">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mx-4 md:mx-10 my-10 gap-4 md:gap-10">
       {products.map((product) => (
         <Link
           key={product._id}

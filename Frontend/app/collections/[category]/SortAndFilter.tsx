@@ -32,6 +32,7 @@ export default function SortAndFilter({ totalProducts }: Props) {
   const [selectFilterKey, setSelectFilterKey] = useState<string[]>([]);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const mobileButtonRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +42,8 @@ export default function SortAndFilter({ totalProducts }: Props) {
         openSortOption &&
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node) &&
-        !buttonRef.current?.contains(e.target as Node)
+        !buttonRef.current?.contains(e.target as Node) &&
+        !mobileButtonRef.current?.contains(e.target as Node)
       ) {
         setOpenSortOption(false);
       }
@@ -86,7 +88,8 @@ export default function SortAndFilter({ totalProducts }: Props) {
 
   return (
     <>
-      <div className="relative flex items-center border-b border-gray-200 py-3">
+      {/* DESKTOP VIEW: Identical to original code */}
+      <div className="hidden md:flex relative items-center border-b border-gray-200 py-3">
         <section className="w-full">
           <h2 className={`${spaceMono.className} text-center text-gray-500`}>
             {totalProducts} PRODUCTS FOUND
@@ -102,7 +105,6 @@ export default function SortAndFilter({ totalProducts }: Props) {
             >
               SORT BY
             </button>
-
             <MdKeyboardArrowDown
               className={
                 openSortOption ? "rotate-180 transition-all" : "transition-all"
@@ -121,15 +123,32 @@ export default function SortAndFilter({ totalProducts }: Props) {
         </div>
       </div>
 
+      {/* MOBILE VIEW */}
+      <div className="flex md:hidden w-full border-b border-gray-200">
+        <div ref={mobileButtonRef} className="flex-1 flex items-center justify-center py-3 border-r border-gray-200 text-gray-400 hover:text-black cursor-pointer" onClick={() => setOpenSortOption((prev) => !prev)}>
+          <button className={`${spaceMono.className} flex items-center gap-2 text-sm`}>
+            SORT BY
+          </button>
+          <MdKeyboardArrowDown className={openSortOption ? "rotate-180 transition-all" : "transition-all"} />
+        </div>
+        <div className="flex-1 flex items-center justify-center py-3 text-gray-400 hover:text-black cursor-pointer" onClick={handleFilter}>
+          <button className={`${spaceMono.className} text-sm`}>
+            FILTER
+          </button>
+        </div>
+      </div>
+
+      {/* Sort Dropdown */}
       {openSortOption && (
         <div
           ref={wrapperRef}
-          className="absolute right-36.75 p-4 border-l border-r border-b bg-white border-gray-300"
+          className="absolute left-0 md:left-auto md:right-36.75 p-4 border-l border-r border-b bg-white border-gray-300 z-50 w-full md:w-auto"
         >
           {sortOptions.map((option) => (
             <div key={option}>
               <button
-                className={`${spaceMono.className} py-1 text-gray-500 hover:text-black cursor-pointer`}
+                className={`${spaceMono.className} py-2 md:py-1 text-gray-500 hover:text-black cursor-pointer w-full text-center md:text-left text-sm md:text-base`}
+                onClick={() => setOpenSortOption(false)}
               >
                 {option}
               </button>
@@ -141,11 +160,10 @@ export default function SortAndFilter({ totalProducts }: Props) {
       {/* Filter Drawer */}
       <aside
         ref={filterRef}
-        className={`fixed right-0 top-0 z-100 flex h-full w-full max-w-md flex-col bg-white text-black shadow-2xl transition-all duration-300 ${
-          openFilterOption
-            ? "translate-x-0 opacity-100"
-            : "translate-x-full pointer-events-none opacity-0"
-        }`}
+        className={`fixed right-0 top-0 z-100 flex h-full w-full max-w-md flex-col bg-white text-black shadow-2xl transition-all duration-300 ${openFilterOption
+          ? "translate-x-0 opacity-100"
+          : "translate-x-full pointer-events-none opacity-0"
+          }`}
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between border-b border-gray-300 p-6">
@@ -172,36 +190,31 @@ export default function SortAndFilter({ totalProducts }: Props) {
               </button>
               <MdOutlineKeyboardArrowDown
                 size={20}
-                className={`text-gray-500 transition-transform duration-300 ${
-                  openProductType ? "rotate-180" : "rotate-0"
-                }`}
+                className={`text-gray-500 transition-transform duration-300 ${openProductType ? "rotate-180" : "rotate-0"
+                  }`}
               />
             </div>
 
             <div
-              className={`grid transition-all duration-300 ease-in-out ${
-                openProductType
-                  ? "grid-rows-[1fr] opacity-100 mb-5"
-                  : "grid-rows-[0fr] opacity-0 mb-0"
-              }`}
+              className={`grid transition-all duration-300 ease-in-out ${openProductType
+                ? "grid-rows-[1fr] opacity-100 mb-5"
+                : "grid-rows-[0fr] opacity-0 mb-0"
+                }`}
             >
               <div className="overflow-hidden">
                 {demoProductsTypes.map((type, index) => (
                   <div key={index}>
                     <button
                       onClick={() => handleSelectFilterKey(type)}
-                      className={`${
-                        spaceMono.className
-                      } py-1 text-gray-600 hover:text-black cursor-pointer flex items-center transition-all duration-200 ${
-                        selectFilterKey.includes(type) ? "gap-2" : "gap-0"
-                      }`}
+                      className={`${spaceMono.className
+                        } py-1 text-gray-600 hover:text-black cursor-pointer flex items-center transition-all duration-200 ${selectFilterKey.includes(type) ? "gap-2" : "gap-0"
+                        }`}
                     >
                       <span
-                        className={`rounded-full transition-all duration-200 ${
-                          selectFilterKey.includes(type)
-                            ? "w-1.5 h-1.5 bg-gray-700 opacity-100 scale-100"
-                            : "w-0 h-1.5 opacity-0 scale-0"
-                        }`}
+                        className={`rounded-full transition-all duration-200 ${selectFilterKey.includes(type)
+                          ? "w-1.5 h-1.5 bg-gray-700 opacity-100 scale-100"
+                          : "w-0 h-1.5 opacity-0 scale-0"
+                          }`}
                       />
                       <span>{type} (0)</span>
                     </button>
@@ -223,43 +236,37 @@ export default function SortAndFilter({ totalProducts }: Props) {
               </button>
               <MdOutlineKeyboardArrowDown
                 size={20}
-                className={`text-gray-500 transition-transform duration-300 ${
-                  openSize ? "rotate-180" : "rotate-0"
-                }`}
+                className={`text-gray-500 transition-transform duration-300 ${openSize ? "rotate-180" : "rotate-0"
+                  }`}
               />
             </div>
 
             <div
-              className={`grid transition-all duration-300 ease-in-out ${
-                openSize
-                  ? "grid-rows-[1fr] opacity-100 pb-5"
-                  : "grid-rows-[0fr] opacity-0 pb-0"
-              }`}
+              className={`grid transition-all duration-300 ease-in-out ${openSize
+                ? "grid-rows-[1fr] opacity-100 pb-5"
+                : "grid-rows-[0fr] opacity-0 pb-0"
+                }`}
             >
               <div className="overflow-hidden">
                 {demoSizes.map((size, index) => (
                   <div key={index}>
                     <button
                       onClick={() => handleSelectFilterKey(size)}
-                      className={`${
-                        spaceMono.className
-                      } py-1 text-gray-600 hover:text-black cursor-pointer flex items-center transition-all duration-200 ${
-                        selectFilterKey.includes(size) ? "gap-2" : "gap-0"
-                      }`}
+                      className={`${spaceMono.className
+                        } py-1 text-gray-600 hover:text-black cursor-pointer flex items-center transition-all duration-200 ${selectFilterKey.includes(size) ? "gap-2" : "gap-0"
+                        }`}
                     >
                       <span
-                        className={`rounded-full transition-all duration-200 ${
-                          selectFilterKey.includes(size)
-                            ? "w-1.5 h-1.5 bg-gray-700 opacity-100 scale-100"
-                            : "w-0 h-1.5 opacity-0 scale-0"
-                        }`}
+                        className={`rounded-full transition-all duration-200 ${selectFilterKey.includes(size)
+                          ? "w-1.5 h-1.5 bg-gray-700 opacity-100 scale-100"
+                          : "w-0 h-1.5 opacity-0 scale-0"
+                          }`}
                       />
                       <span
-                        className={`transition-colors duration-200 ${
-                          selectFilterKey.includes(size)
-                            ? "text-black font-medium"
-                            : ""
-                        }`}
+                        className={`transition-colors duration-200 ${selectFilterKey.includes(size)
+                          ? "text-black font-medium"
+                          : ""
+                          }`}
                       >
                         {size} (0)
                       </span>

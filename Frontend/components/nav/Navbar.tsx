@@ -15,7 +15,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { FiMenu, FiShoppingBag, FiX } from "react-icons/fi";
+import { FiMenu, FiShoppingBag, FiX, FiArrowLeft, FiSearch } from "react-icons/fi";
 import Search from "../search/Search";
 
 interface UserProfile {
@@ -265,7 +265,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 z-100 w-full bg-black text-white shadow-sm">
+    <div className="fixed left-0 top-0 z-[100] w-full bg-black text-white shadow-sm">
       <div className="flex flex-col items-center justify-center">
         <button className="group  mt-5 cursor-pointer text-center text-xs italic">
           <span className="block">SUMMER SALE - NOW UP TO 50% OFF</span>
@@ -275,49 +275,61 @@ const Navbar = () => {
         </button>
       </div>
 
-      <div className="relative mx-4 flex items-center justify-center py-5">
-        <button
-          className="absolute left-4 rounded-full p-2 transition"
-          aria-expanded={isOpenMenubar}
-          aria-controls="mobile-menu"
-          onClick={toggleMenuBar}
-        >
-          <FiMenu size={25} className="cursor-pointer" />
-        </button>
+      <div className="mx-4 md:mx-8 flex items-center justify-between py-5">
+        <div className="flex-1 flex justify-start">
+          <button
+            className="rounded-full p-2 transition"
+            aria-expanded={isOpenMenubar}
+            aria-controls="mobile-menu"
+            onClick={toggleMenuBar}
+          >
+            <FiMenu size={25} className="cursor-pointer" />
+          </button>
+        </div>
 
-        <Link
-          href="/"
-          onClick={() => router.push("/")}
-          className={`${Eurostil.className} cursor-pointer text-4xl`}
-        >
-          NEVER NEVER
-        </Link>
+        <div className="flex-none text-center">
+          <Link
+            href="/"
+            onClick={() => router.push("/")}
+            className={`${Eurostil.className} cursor-pointer text-2xl lg:text-4xl`}
+          >
+            NEVER NEVER
+          </Link>
+        </div>
 
-        <div className="absolute right-4 flex items-center gap-3 md:right-4">
+        <div className="flex-1 flex justify-end items-center gap-3">
+          <button
+            type="button"
+            onClick={openSearch}
+            aria-label="Open search"
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-white/10 lg:hidden"
+          >
+            <FiSearch size={20} />
+          </button>
           <button
             type="button"
             onClick={openCart}
             aria-label="Open cart"
-            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-white/10 md:hidden"
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-white/10 lg:hidden"
           >
             <FiShoppingBag size={20} />
           </button>
 
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden items-center gap-3 lg:gap-5 lg:flex">
             {navs.map((nav, index) => (
               <div key={index}>
                 {nav.label === "ACCOUNT" ? (
                   <button
                     type="button"
                     onClick={openAccount}
-                    className={`${spaceMono.className} cursor-pointer`}
+                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
                     ACCOUNT
                   </button>
                 ) : nav.href ? (
                   <Link
                     href={nav.href}
-                    className={`${spaceMono.className} cursor-pointer`}
+                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
                     {nav.label}
                   </Link>
@@ -325,14 +337,14 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={openSearch}
-                    className={`${spaceMono.className} cursor-pointer`}
+                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
                     SEARCH
                   </button>
                 ) : (
                   <button
                     onClick={openCart}
-                    className={`${spaceMono.className} cursor-pointer`}
+                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
                     {nav.label === "CART" ? `CART (${cartCount})` : nav.label}
                   </button>
@@ -368,7 +380,7 @@ const Navbar = () => {
 
       <aside
         id="mobile-menu"
-        className={`fixed left-0 top-0 z-50 flex h-full w-96 flex-col bg-black p-6 shadow-2xl transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-full w-[85vw] max-w-sm flex-col bg-black p-6 shadow-2xl transition-all duration-300 ${
           isOpenMenubar
             ? "translate-x-0 opacity-100"
             : "-translate-x-full pointer-events-none opacity-0"
@@ -436,7 +448,13 @@ const Navbar = () => {
 
         {/* dropdown menu */}
         {activeDropdown && (
-          <div className="absolute left-full top-0 z-50 flex h-full w-105 flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
+          <div className="absolute left-0 sm:left-full top-0 z-50 flex h-full w-full sm:w-[85vw] sm:max-w-sm flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
+            <button 
+              onClick={() => setActiveDropdown(null)} 
+              className="sm:hidden text-gray-400 text-sm uppercase mb-4 text-left hover:text-white flex items-center gap-2"
+            >
+              <FiArrowLeft size={16} /> BACK
+            </button>
             <div className="grid gap-4 text-2xl font-semibold uppercase text-white">
               {menuItemsOne
                 .find((item) => item.label === activeDropdown)

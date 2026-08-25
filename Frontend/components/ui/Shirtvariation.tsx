@@ -7,7 +7,7 @@ import Link from "next/link";
 const Shirtvariation = () => {
   return (
     <div>
-      <div className="flex flex-row items-center gap-8 w-6xl mx-auto my-20">
+      <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full max-w-6xl px-4 mx-auto my-10 md:my-20">
         <Link href="/collections/never-full-sleves" className="relative">
           <Image alt="bristol-image" height={1000} width={1000} src={Fullsleves} />
           <h2

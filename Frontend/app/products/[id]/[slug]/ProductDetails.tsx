@@ -59,16 +59,17 @@ const ProductDetails = ({
 
   return (
     <div className="border-b border-gray-300 py-5">
-      <div className="max-w-6xl mx-auto flex flex-row gap-20 my-10 ">
-        <div className="relative aspect-3/2 w-full self-start overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-10 md:gap-20 my-10 ">
+        <div className="relative aspect-square w-full max-w-xl self-start overflow-hidden bg-gray-50 ">
           <Image
             src={image}
             alt={name}
             fill
-            className="object-cover"
+            className="object-contain"
             priority
           />
         </div>
+
         <div className={`${spaceMono.className}`}>
           <h2 className="text-2xl mb-2">{name}</h2>
           <div className="flex flex-row items-center gap-3">

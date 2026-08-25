@@ -8,7 +8,7 @@ import Link from "next/link";
 const Banner = () => {
   return (
     <div>
-      <div className="flex flex-row items-center gap-8 w-6xl mx-auto my-20">
+      <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full max-w-6xl px-4 mx-auto my-10 md:my-20">
         <Link href="/collections/fc-real-bristol" className="relative">
           <Image alt="bristol-image" src={Bristol} />
           <h2
@@ -27,7 +27,7 @@ const Banner = () => {
         </Link>
       </div>
       <hr className="text-gray-200" />
-      <div className="flex flex-row items-center gap-8 w-6xl mx-auto my-20">
+      <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full max-w-6xl px-4 mx-auto my-10 md:my-20">
         <Link href="/collections/fc-real-bristol" className="relative">
           <Image alt="bristol-image" src={Tr} />
           <h2
