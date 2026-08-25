@@ -3,6 +3,7 @@ import { addToCart } from "@/feature/redux/cart/cartApi";
 import { useAppDispatch } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
 import { terms } from "@/public/terms/terms";
+import useCartGuard from "@/hook/useCartGuard";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -47,14 +48,17 @@ const ProductDetails = ({
     }
   };
 
+  // ── Cart guard: redirects guests to login, adds directly for logged-in users
+  const guardedAddToCart = useCartGuard(({ productId, quantity, size }) => {
+    dispatch(addToCart({ productId, quantity, size }));
+  });
+
   const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        productId: id,
-        quantity: productItem,
-        size: isSelectedSize,
-      }),
-    );
+    guardedAddToCart({
+      productId: id,
+      quantity: productItem,
+      size: isSelectedSize,
+    });
   };
 
   return (

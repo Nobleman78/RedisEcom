@@ -56,7 +56,19 @@ const updateCartState = (
 const cartSlice = createSlice({
   name: "cart",
   initialState,
-  reducers: {},
+  reducers: {
+    // Synchronously resets cart to empty — dispatched on logout so the
+    // count drops to 0 immediately without waiting for a page reload.
+    clearCart(state) {
+      state.cartItems = [];
+      state.totalPrice = 0;
+      state.shipping = 0;
+      state.totalAmount = 0;
+      state.totalQuantity = 0;
+      state.status = "idle";
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCart.pending, (state) => {
@@ -106,4 +118,5 @@ const cartSlice = createSlice({
   },
 });
 
+export const { clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

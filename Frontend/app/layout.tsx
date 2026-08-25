@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import Modal from "@/components/emailmodal/Modal";
 import Navbar from "@/components/nav/Navbar";
+import PostLoginCartHandler from "@/components/ui/PostLoginCartHandler";
 import Follow from "@/components/ui/Follow";
 import Providers from "./Providers";
 import "./globals.css";
@@ -22,6 +23,8 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <Modal />
+          {/* Handles auto-add-to-cart after a guest logs in */}
+          <PostLoginCartHandler />
 
           <main className="grow">{children}</main>
 

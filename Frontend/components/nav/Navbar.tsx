@@ -1,15 +1,16 @@
 "use client";
 import { logoutAction } from "@/app/actions/auth";
 import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
-
+import { fetchAuthProfile } from "@/feature/api/apiSlice";
 import {
   fetchCart,
   removeCartItem,
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
+import { clearCart } from "@/feature/redux/cart/cartSlice";
 import type { CartItem } from "@/feature/redux/cart/cartSlice";
+import { clearAuth } from "@/feature/redux/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import { createBrowserClient } from "@supabase/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,84 +19,22 @@ import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiShoppingBag, FiX, FiArrowLeft, FiSearch } from "react-icons/fi";
 import Search from "../search/Search";
 
-interface UserProfile {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-}
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const cartCount = useAppSelector((state) => state.cart.totalQuantity);
   const cartItems: CartItem[] = useAppSelector((state) => state.cart.cartItems);
-  const [user, setUser] = useState<UserProfile | null>(null);
 
-  // Fetch profile whenever the route changes, so login redirects update Navbar state.
+  // ── Auth: read from Redux global state ─────────────────────────────────────
+  const user = useAppSelector((state) => state.auth.user);
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+
+  // Re-fetch auth profile on every route change so login/logout redirects
+  // immediately update the Navbar (and any other subscriber) via Redux.
   useEffect(() => {
-    const fetchProfile = async () => {
-      // ── ADDED: Check Supabase Auth First ─────────────────────────────────────
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      );
-
-      const {
-        data: { user: supabaseUser },
-      } = await supabase.auth.getUser();
-
-      if (supabaseUser) {
-        setUser({
-          _id: supabaseUser.id,
-          name:
-            supabaseUser.user_metadata?.full_name ||
-            supabaseUser.email?.split("@")[0] ||
-            "User",
-          email: supabaseUser.email || "",
-          role: "user",
-        });
-        return;
-      }
-
-      // ── EXISTING CODE: Fallback to custom backend endpoint ─────────────────
-      try {
-        const profileRes = await fetch("/api/auth/profile", {
-          credentials: "include",
-        });
-
-        if (profileRes.ok) {
-          const data = await profileRes.json();
-          setUser(data);
-          return;
-        }
-
-        if (profileRes.status === 401) {
-          const refreshRes = await fetch("/api/auth/refresh-token", {
-            method: "POST",
-            credentials: "include",
-          });
-
-          if (refreshRes.ok) {
-            const retryRes = await fetch("/api/auth/profile", {
-              credentials: "include",
-            });
-            if (retryRes.ok) {
-              const data = await retryRes.json();
-              setUser(data);
-              return;
-            }
-          }
-        }
-
-        setUser(null);
-      } catch {
-        setUser(null);
-      }
-    };
-
-    fetchProfile();
-  }, [pathname]);
+    dispatch(fetchAuthProfile());
+  }, [dispatch, pathname]);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -555,14 +494,20 @@ const Navbar = () => {
 
         {/* Sign Out */}
         <div className="border-t border-gray-600 p-6">
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              className={`${spaceMono.className} w-full border border-white py-3 text-sm uppercase tracking-widest cursor-pointer hover:bg-white hover:text-black transition-colors duration-200`}
-            >
-              Sign Out
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={async () => {
+              // Instantly clear cart + auth from Redux so the UI updates
+              // to 0 items / guest state before the redirect fires.
+              dispatch(clearCart());
+              dispatch(clearAuth());
+              closeAccount();
+              await logoutAction();
+            }}
+            className={`${spaceMono.className} w-full border border-white py-3 text-sm uppercase tracking-widest cursor-pointer hover:bg-white hover:text-black transition-colors duration-200`}
+          >
+            Sign Out
+          </button>
         </div>
       </aside>
 
@@ -596,7 +541,25 @@ const Navbar = () => {
         </div>
         {/* carts items section */}
         <div className="flex-1 overflow-y-auto border-b border-gray-600 p-6 ">
-          {cartItems.length > 0 ? (
+          {/* ── Guest gate: not logged in ─────────────────────────────────── */}
+          {!isLoggedIn ? (
+            <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+              <FiShoppingBag size={40} className="text-gray-500" />
+              <p className={`${spaceMono.className} text-sm uppercase tracking-wide text-white`}>
+                Sign in to view your cart
+              </p>
+              <p className={`${spaceMono.className} text-xs text-gray-400`}>
+                Your items will be saved once you log in.
+              </p>
+              <Link
+                href="/login"
+                onClick={closeCart}
+                className={`${spaceMono.className} mt-2 border border-white px-6 py-2 text-xs uppercase tracking-widest text-white transition hover:bg-white hover:text-black`}
+              >
+                Login
+              </Link>
+            </div>
+          ) : cartItems.length > 0 ? (
             <div className="flex flex-col gap-4">
               {cartItems.map((item: CartItem) => (
                 <div
@@ -692,7 +655,7 @@ const Navbar = () => {
             </div>
           )}
         </div>
-        {cartItems.length > 0 && (
+        {isLoggedIn && cartItems.length > 0 && (
           <div className="px-6 py-6">
             <div className="mb-10">
               <p className={`${spaceMono.className} text-white`}>
