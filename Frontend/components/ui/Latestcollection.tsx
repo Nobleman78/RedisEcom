@@ -5,14 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import { fetchProducts, selectProducts } from "@/feature/redux/product/productSlice";
+import {
+  fetchProducts,
+  selectProducts,
+} from "@/feature/redux/product/productSlice";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
   const ITEMS_PER_PAGE = 4;
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
-  
+
   useEffect(() => {
     dispatch(fetchProducts({ limit: 12 }));
   }, [dispatch]);
@@ -36,15 +39,15 @@ const Latestcollection = () => {
   const pageIndex = startIndex / ITEMS_PER_PAGE;
 
   return (
-    <div className="mt-20">
+    <div className="mt-12 sm:mt-16 md:mt-20">
       <h2
-        className={`${spaceMono.className} text-center uppercase text-3xl text-[#1c1c1c]`}
+        className={`${spaceMono.className} text-center text-xl uppercase text-[#1c1c1c] sm:text-2xl md:text-3xl`}
       >
         Latest
       </h2>
 
       {/* Outer Viewport */}
-      <div className="relative mx-4 md:mx-15 my-10 overflow-hidden">
+      <div className="relative mx-4 my-6 overflow-hidden sm:my-8 md:mx-15 md:my-10">
         {/* Animated Sliding Track */}
         <div
           className="flex gap-4 md:gap-10 transition-transform duration-500 ease-in-out overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none max-md:[transform:none!important] [&::-webkit-scrollbar]:hidden"

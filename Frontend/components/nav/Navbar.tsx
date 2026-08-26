@@ -368,7 +368,7 @@ const Navbar = () => {
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsOpenMenubar(false)}
-                className={`${Nimbus.className} rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
+                className={`${Nimbus.className} rounded-md px-2 py-2 text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
                   isOpenMenubar
                     ? "translate-y-0 opacity-100"
                     : "pointer-events-none translate-y-3 opacity-0"
@@ -381,7 +381,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={() => toggleDropdown(item.label)}
-                  className={`${Nimbus.className} cursor-pointer w-full text-left rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
+                  className={`${Nimbus.className} w-full cursor-pointer rounded-md px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
                     isOpenMenubar
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none translate-y-3 opacity-0"
@@ -400,7 +400,7 @@ const Navbar = () => {
               key={item.label}
               href={item.href}
               onClick={() => setIsOpenMenubar(false)}
-              className={`${Nimbus.className} rounded px-2 p-3 text-3xl tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
+              className={`${Nimbus.className} rounded px-2 py-2 text-base tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
                 isOpenMenubar
                   ? "translate-y-0 opacity-100"
                   : "pointer-events-none translate-y-3 opacity-0"
@@ -420,7 +420,7 @@ const Navbar = () => {
             >
               <FiArrowLeft size={16} /> BACK
             </button>
-            <div className="grid gap-4 text-2xl font-semibold uppercase text-white">
+            <div className="grid gap-4 text-base font-semibold uppercase text-white sm:text-lg">
               {menuItemsOne
                 .find((item) => item.label === activeDropdown)
                 ?.dropdown?.map((dropdownItem) => (

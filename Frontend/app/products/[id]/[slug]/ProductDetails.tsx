@@ -74,7 +74,7 @@ const ProductDetails = ({
 
   return (
     <div className="border-b border-gray-300 py-5">
-      <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-10 md:gap-20 my-10 ">
+      <div className="mx-auto my-8 flex max-w-6xl flex-col gap-8 px-4 md:my-10 md:flex-row md:gap-12 md:px-8 lg:gap-16">
         <div className="relative aspect-square w-full max-w-xl self-start overflow-hidden bg-gray-50 ">
           <Image
             src={image}
@@ -86,7 +86,7 @@ const ProductDetails = ({
         </div>
 
         <div className={`${spaceMono.className}`}>
-          <h2 className="text-2xl mb-2">{name}</h2>
+          <h2 className="mb-2 text-xl sm:text-2xl">{name}</h2>
           <div className="flex flex-row items-center gap-3">
             <p className="text-xl mb-1 text-red-400">
               ${((price * discount) / 100).toFixed(2)}
@@ -122,11 +122,17 @@ const ProductDetails = ({
           )}
           {/* Plus and minus button */}
           <div className="mt-10 flex gap-5">
-            <button className="text-2xl cursor-pointer" onClick={minusProduct}>
+            <button
+              className="flex size-10 items-center justify-center text-xl cursor-pointer"
+              onClick={minusProduct}
+            >
               -
             </button>
             <span className="border px-5 py-2">{productItem}</span>
-            <button className="cursor-pointer" onClick={plusProduct}>
+            <button
+              className="flex size-10 items-center justify-center text-xl cursor-pointer"
+              onClick={plusProduct}
+            >
               +
             </button>
           </div>

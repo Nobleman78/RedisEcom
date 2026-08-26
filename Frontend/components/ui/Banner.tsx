@@ -12,7 +12,7 @@ const Banner = () => {
         <Link href="/collections/fc-real-bristol" className="relative">
           <Image alt="bristol-image" src={Bristol} />
           <h2
-            className={`absolute bottom-5 -translate-x-1/2 bg-black text-white left-1/2 px-5 py-2 uppercase ${spaceMono.className}`}
+            className={`absolute bottom-5 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 bg-black px-3 py-1.5 text-center text-xs uppercase text-white sm:px-5 sm:py-2 sm:text-sm ${spaceMono.className}`}
           >
             F.C Real Bristol
           </h2>
@@ -20,7 +20,7 @@ const Banner = () => {
         <Link href="/collections/cmf-outdoor-garment" className="relative">
           <Image alt="cmf-image" src={Cmf} />
           <h2
-            className={`absolute bottom-5 -translate-x-1/2 bg-black text-white left-1/2 px-5 py-2 uppercase ${spaceMono.className}`}
+            className={`absolute bottom-5 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 bg-black px-3 py-1.5 text-center text-xs uppercase text-white sm:px-5 sm:py-2 sm:text-sm ${spaceMono.className}`}
           >
             CMF Outdoor Garment
           </h2>
@@ -31,7 +31,7 @@ const Banner = () => {
         <Link href="/collections/fc-real-bristol" className="relative">
           <Image alt="bristol-image" src={Tr} />
           <h2
-            className={`absolute bottom-5 -translate-x-1/2 bg-black text-white left-1/2 px-5 py-2 uppercase ${spaceMono.className}`}
+            className={`absolute bottom-5 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 bg-black px-3 py-1.5 text-center text-xs uppercase text-white sm:px-5 sm:py-2 sm:text-sm ${spaceMono.className}`}
           >
             I.S NEXT X ROLAND
           </h2>
@@ -39,7 +39,7 @@ const Banner = () => {
         <Link href="/collections/cmf-outdoor-garment" className="relative">
           <Image alt="cmf-image" src={Goggles} />
           <h2
-            className={`absolute bottom-5 -translate-x-1/2 bg-black text-white left-1/2 px-5 py-2 uppercase ${spaceMono.className}`}
+            className={`absolute bottom-5 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 bg-black px-3 py-1.5 text-center text-xs uppercase text-white sm:px-5 sm:py-2 sm:text-sm ${spaceMono.className}`}
           >
             SUB SUN
           </h2>

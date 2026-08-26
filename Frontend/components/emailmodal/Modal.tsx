@@ -108,9 +108,9 @@ const Modal = () => {
 
       <div
         ref={modalRef}
-        className="relative z-10 bg-white p-8 text-center w-lg"
+        className="relative z-10 w-[calc(100%-2rem)] max-w-lg bg-white p-4 text-center sm:p-8"
       >
-        <Link href="/" className={`${spaceMono.className} text-2xl`}>
+        <Link href="/" className={`${spaceMono.className} text-lg sm:text-2xl`}>
           <h2>NEVER NEVER</h2>
         </Link>
 
