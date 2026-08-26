@@ -6,6 +6,7 @@ import { terms } from "@/public/terms/terms";
 import useCartGuard from "@/hook/useCartGuard";
 import Image from "next/image";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 interface Props {
   id: string;
@@ -43,15 +44,25 @@ const ProductDetails = ({
     setProductItem((prev) => prev + 1);
   };
   const minusProduct = () => {
-    if (productItem > 0) {
+    if (productItem > 1) {
       setProductItem((prev) => prev - 1);
     }
   };
 
   // ── Cart guard: redirects guests to login, adds directly for logged-in users
-  const guardedAddToCart = useCartGuard(({ productId, quantity, size }) => {
-    dispatch(addToCart({ productId, quantity, size }));
-  });
+  const guardedAddToCart = useCartGuard(
+    async ({ productId, quantity, size }) => {
+      try {
+        await dispatch(addToCart({ productId, quantity, size })).unwrap();
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: typeof error === "string" ? error : "Could not add to cart",
+        });
+      }
+    },
+  );
 
   const handleAddToCart = () => {
     guardedAddToCart({

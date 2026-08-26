@@ -3,10 +3,12 @@ import { logoutAction } from "@/app/actions/auth";
 import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
 import { fetchAuthProfile } from "@/feature/api/apiSlice";
 import {
+  addToCart,
   fetchCart,
   removeCartItem,
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
+import { popPendingCartItem } from "@/hook/useCartGuard";
 import { clearCart } from "@/feature/redux/cart/cartSlice";
 import type { CartItem } from "@/feature/redux/cart/cartSlice";
 import { clearAuth } from "@/feature/redux/auth/authSlice";
@@ -16,8 +18,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { FiMenu, FiShoppingBag, FiX, FiArrowLeft, FiSearch } from "react-icons/fi";
+import {
+  FiMenu,
+  FiShoppingBag,
+  FiX,
+  FiArrowLeft,
+  FiSearch,
+} from "react-icons/fi";
 import Search from "../search/Search";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const router = useRouter();
@@ -39,6 +48,23 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
+
+  // Replay any pending cart item saved before the guest was redirected to login
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const pending = popPendingCartItem();
+    if (pending) {
+      dispatch(addToCart(pending))
+        .unwrap()
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: typeof error === "string" ? error : "Could not add to cart",
+          });
+        });
+    }
+  }, [isLoggedIn, dispatch]);
 
   const navs = [
     { label: user ? "ACCOUNT" : "LOGIN", href: user ? undefined : "/login" },
@@ -204,7 +230,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 z-[100] w-full bg-black text-white shadow-sm">
+    <div className="fixed left-0 top-0 z-100 w-full bg-black text-white shadow-sm">
       <div className="flex flex-col items-center justify-center">
         <button className="group  mt-5 cursor-pointer text-center text-xs italic">
           <span className="block">SUMMER SALE - NOW UP TO 50% OFF</span>
@@ -388,8 +414,8 @@ const Navbar = () => {
         {/* dropdown menu */}
         {activeDropdown && (
           <div className="absolute left-0 sm:left-full top-0 z-50 flex h-full w-full sm:w-[85vw] sm:max-w-sm flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
-            <button 
-              onClick={() => setActiveDropdown(null)} 
+            <button
+              onClick={() => setActiveDropdown(null)}
               className="sm:hidden text-gray-400 text-sm uppercase mb-4 text-left hover:text-white flex items-center gap-2"
             >
               <FiArrowLeft size={16} /> BACK
@@ -545,7 +571,9 @@ const Navbar = () => {
           {!isLoggedIn ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <FiShoppingBag size={40} className="text-gray-500" />
-              <p className={`${spaceMono.className} text-sm uppercase tracking-wide text-white`}>
+              <p
+                className={`${spaceMono.className} text-sm uppercase tracking-wide text-white`}
+              >
                 Sign in to view your cart
               </p>
               <p className={`${spaceMono.className} text-xs text-gray-400`}>

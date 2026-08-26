@@ -1,6 +1,6 @@
 "use client";
 
-import { addToCart } from "@/feature/redux/cart/cartApi";
+import { addToCart, fetchCart } from "@/feature/redux/cart/cartApi";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { popPendingCartItem } from "@/hook/useCartGuard";
 import { useEffect, useRef } from "react";
@@ -34,7 +34,7 @@ const PostLoginCartHandler = () => {
     const wasNotSucceeded = prevStatus.current !== "succeeded";
     const isNowSucceeded = authStatus === "succeeded";
 
-    // Always keep prevStatus in sync 
+    // Always keep prevStatus in sync
     prevStatus.current = authStatus;
 
     // Only proceed when we just crossed into "succeeded" + logged in
@@ -42,6 +42,9 @@ const PostLoginCartHandler = () => {
 
     // Guard against double-firing (React StrictMode / concurrent renders)
     if (hasProcessed.current) return;
+
+    hasProcessed.current = true;
+    dispatch(fetchCart());
 
     // Check if there's a pending item saved before the login redirect
     const pending = popPendingCartItem();
@@ -66,13 +69,6 @@ const PostLoginCartHandler = () => {
 
     dispatch(addToCart(pending))
       .unwrap()
-      .then(() => {
-        Toast.fire({
-          icon: "success",
-          title: "Added to cart!",
-          text: "Item successfully added to your cart.",
-        });
-      })
       .catch(() => {
         Toast.fire({
           icon: "error",
