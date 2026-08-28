@@ -1,5 +1,6 @@
 import Banner from "@/components/ui/Banner";
 import Discount from "@/components/ui/Discount";
+import FeatureProducts from "@/components/ui/FeatureProducts";
 import Latestcollection from "@/components/ui/Latestcollection";
 import Newslater from "@/components/ui/Newslater";
 import Overview from "@/components/ui/Overview";
@@ -17,6 +18,9 @@ export default function Home() {
       </section>
       <section>
         <Latestcollection />
+      </section>
+      <section>
+        <FeatureProducts />
       </section>
       <section>
         <Shirtvariation />
