@@ -1,23 +1,23 @@
 "use client";
 
+import {
+  fetchProductByStatus,
+  selectProductByStatus,
+} from "@/feature/redux/product/productSlice";
+import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import {
-  fetchProducts,
-  selectProducts,
-} from "@/feature/redux/product/productSlice";
+import { useEffect, useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
   const ITEMS_PER_PAGE = 4;
   const dispatch = useAppDispatch();
-  const products = useAppSelector(selectProducts);
+  const products = useAppSelector(selectProductByStatus);
 
   useEffect(() => {
-    dispatch(fetchProducts({ limit: 12 }));
+    dispatch(fetchProductByStatus());
   }, [dispatch]);
 
   const [startIndex, setStartIndex] = useState(0);

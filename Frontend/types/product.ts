@@ -8,4 +8,5 @@ export interface Product {
   size?: string[];
   isDiscount: number;
   isFeatured?: boolean;
+  productType:string
 }

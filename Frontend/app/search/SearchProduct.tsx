@@ -54,11 +54,18 @@ const SearchProduct = ({ query }: SearchProductProps) => {
 
   // 1. Get unique categories using Array.from and Set
 
-  const uniqueCategories = Array.from(
-    new Set(products.map((product) => product.category).filter(Boolean)),
+  const uniqueProductTypes = Array.from(
+    new Set(products.map((product) => product.productType).filter(Boolean)),
   );
   const uniqueProductSize = Array.from(
-    new Set(products.flatMap((product) => product.size).filter(Boolean)),
+    new Set(products.flatMap((product) => product.size ?? [])),
+  ).filter((size) => Boolean(size));
+
+  const productCountBySize = new Map(
+    uniqueProductSize.map((size) => [
+      size,
+      products.filter((product) => product.size?.includes(size)).length,
+    ]),
   );
 
   return (
@@ -89,12 +96,12 @@ const SearchProduct = ({ query }: SearchProductProps) => {
               </div>
               {/* Category div */}
               <div className="flex flex-col gap-2">
-                {uniqueCategories.map((category) => (
+                {uniqueProductTypes.map((producttype) => (
                   <button
-                    key={category}
+                    key={producttype}
                     className={`${spaceMono.className} text-left w-full capitalize cursor-pointer text-gray-600 hover:text-black`}
                   >
-                    {category}
+                    {producttype}
                   </button>
                 ))}
               </div>
@@ -113,7 +120,7 @@ const SearchProduct = ({ query }: SearchProductProps) => {
                     className={`${spaceMono.className} text-start text-gray-600 hover:text-black cursor-pointer`}
                     key={index}
                   >
-                    {size} (0)
+                    {size} ({productCountBySize.get(size) ?? 0})
                   </button>
                 ))}
               </div>

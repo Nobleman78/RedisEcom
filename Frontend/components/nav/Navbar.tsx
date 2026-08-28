@@ -256,7 +256,7 @@ const Navbar = () => {
           <Link
             href="/"
             onClick={() => router.push("/")}
-            className={`${Eurostil.className} cursor-pointer text-2xl lg:text-4xl`}
+            className={`${Eurostil.className} cursor-pointer text-xl lg:text-4xl`}
           >
             NEVER NEVER
           </Link>
