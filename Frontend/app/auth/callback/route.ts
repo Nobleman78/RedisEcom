@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     }
 
     const googleLoginResponse = await fetch(
-      "http://localhost:5000/api/auth/google-login",
+      "https://redis-ecom.vercel.app/api/auth/google-login",
       {
         method: "POST",
         headers: {
