@@ -190,7 +190,6 @@ export const getProductsByCategory = async (req, res) => {
   }
 };
 
-
 // toggle featured product
 export const toggleFeaturedProduct = async (req, res) => {
   const { id } = req.params;
@@ -227,5 +226,3 @@ export const getLatestProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-

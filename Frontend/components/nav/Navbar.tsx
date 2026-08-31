@@ -113,7 +113,7 @@ const Navbar = () => {
     }
   }, [isLoggedIn, dispatch]);
 
-  const navs = [{ label: "SEARCH" }, { label: "CART" }];
+  const navs = [{ label: "ACCOUNT" }, { label: "SEARCH" }, { label: "CART" }];
 
   const menuItemsOne = [
     { label: "LATEST", href: "/collections/latest" },
@@ -280,7 +280,21 @@ const Navbar = () => {
           <div className="hidden items-center gap-3 lg:gap-5 lg:flex">
             {navs.map((nav, index) => (
               <div key={index}>
-                {nav.label === "SEARCH" ? (
+                {nav.label === "ACCOUNT" ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (user) {
+                        openAccount();
+                      } else {
+                        router.push("/login");
+                      }
+                    }}
+                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
+                  >
+                    ACCOUNT
+                  </button>
+                ) : nav.label === "SEARCH" ? (
                   <button
                     type="button"
                     onClick={openSearch}
@@ -380,34 +394,24 @@ const Navbar = () => {
           })}
         </nav>
         {/* Menubar two */}
-        {user ? (
-          <button
-            type="button"
-            onClick={() => {
-              setIsOpenMenubar(false);
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpenMenubar(false);
+            if (user) {
               openAccount();
-            }}
-            className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
-              isOpenMenubar
-                ? "translate-y-0 opacity-100"
-                : "pointer-events-none translate-y-3 opacity-0"
-            }`}
-          >
-            ACCOUNT
-          </button>
-        ) : (
-          <Link
-            href="/login"
-            onClick={() => setIsOpenMenubar(false)}
-            className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
-              isOpenMenubar
-                ? "translate-y-0 opacity-100"
-                : "pointer-events-none translate-y-3 opacity-0"
-            }`}
-          >
-            LOGIN
-          </Link>
-        )}
+            } else {
+              router.push("/login");
+            }
+          }}
+          className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
+            isOpenMenubar
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-3 opacity-0"
+          }`}
+        >
+          ACCOUNT
+        </button>
 
         <nav className="mt-15 flex flex-col gap-3">
           {menuItemsTwo.map((item) => (
