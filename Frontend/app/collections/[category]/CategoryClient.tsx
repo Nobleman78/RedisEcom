@@ -1,19 +1,16 @@
 "use client";
 import {
-  fetchFeaturedProduct,
-  fetchProductByCategory,
-  fetchProductByStatus,
-  selectProducts,
-  selectProductStatus,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+  useGetFeaturedProductsQuery,
+  useGetLatestProductsQuery,
+  useGetProductsByCategoryQuery,
+} from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import {
   filterProducts,
   getUniqueValues,
   sortProducts,
 } from "@/lib/productCatalog";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Breadcrumb from "./BreadCrumb";
 import ProductGrid from "./ProductGrid";
 import SortAndFilter from "./SortAndFilter";
@@ -23,9 +20,6 @@ interface Props {
 }
 
 const CategoryClient = ({ category }: Props) => {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectProducts);
-  const status = useAppSelector(selectProductStatus);
   const [sortValue, setSortValue] = useState("most-relevant");
   const [draftProductTypes, setDraftProductTypes] = useState<string[]>([]);
   const [draftSizes, setDraftSizes] = useState<string[]>([]);
@@ -36,20 +30,38 @@ const CategoryClient = ({ category }: Props) => {
 
   const isFeatured = category.toLowerCase() === "featured";
   const isLatest = category.toLowerCase() === "latest";
+  const isRegularCategory = !isFeatured && !isLatest;
 
-  useEffect(() => {
+  const featuredQuery = useGetFeaturedProductsQuery(undefined, {
+    skip: !isFeatured,
+  });
+  const latestQuery = useGetLatestProductsQuery(undefined, {
+    skip: !isLatest,
+  });
+  const categoryQuery = useGetProductsByCategoryQuery(category, {
+    skip: !isRegularCategory,
+  });
+
+  const products = useMemo(() => {
     if (isFeatured) {
-      dispatch(fetchFeaturedProduct());
-    } else {
-      dispatch(fetchProductByCategory(category));
+      return featuredQuery.data?.products ?? [];
     }
-  }, [category, isFeatured, dispatch]);
-
-  useEffect(() => {
     if (isLatest) {
-      dispatch(fetchProductByStatus());
+      return latestQuery.data ?? [];
     }
-  }, [dispatch, isLatest]);
+    return categoryQuery.data?.products ?? [];
+  }, [
+    isFeatured,
+    isLatest,
+    featuredQuery.data,
+    latestQuery.data,
+    categoryQuery.data,
+  ]);
+
+  const isLoading =
+    (isFeatured && featuredQuery.isLoading) ||
+    (isLatest && latestQuery.isLoading) ||
+    (isRegularCategory && categoryQuery.isLoading);
 
   const availableProductTypes = useMemo(
     () => getUniqueValues(products, "productType"),
@@ -118,7 +130,7 @@ const CategoryClient = ({ category }: Props) => {
         }
       />
 
-      {status === "loading" ? (
+      {isLoading ? (
         <div
           className={`flex h-60 items-center justify-center text-center text-gray-500 ${spaceMono.className}`}
         >

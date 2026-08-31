@@ -1,18 +1,9 @@
+import { useLazyGetProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
-import { searchProducts } from "../../feature/redux/product/productApi";
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  category?: string;
-}
 
 interface SearchProps {
   onProductSelect?: () => void;
@@ -20,44 +11,48 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
   const [term, setTerm] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [triggerSearch, { data, isFetching, isError }] =
+    useLazyGetProductsQuery();
+
+  const products = data?.products ?? [];
 
   // debounce: wait 300ms after the user stops typing before firing the request
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
 
-  const runSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      return;
-    }
+  const runSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        return;
+      }
 
-    try {
-      const data = await searchProducts({
-        search: query,
-        page: 1,
-      });
-
-      setProducts(data.products ?? []);
-      setHasSearched(true);
-      setError("");
-    } catch {
-      setProducts([]);
-      setHasSearched(true);
-      setError("Can not load result");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      try {
+        await triggerSearch({
+          search: query,
+          page: 1,
+        }).unwrap();
+        setHasSearched(true);
+      } catch {
+        setHasSearched(true);
+      }
+    },
+    [triggerSearch],
+  );
 
   useEffect(() => {
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => runSearch(term), 300);
+    if (!term.trim()) {
+      setHasSearched(false);
+    } else {
+      debounceRef.current = setTimeout(() => runSearch(term), 300);
+    }
     return () => clearTimeout(debounceRef.current);
   }, [term, runSearch]);
+
+  const loading = isFetching;
+  const error = isError ? "Can not load result" : "";
 
   return (
     <div className="w-full flex items-center justify-between">
@@ -65,19 +60,7 @@ const Search: React.FC<SearchProps> = ({ onProductSelect }) => {
         type="text"
         value={term}
         onChange={(e) => {
-          const value = e.target.value;
-          setTerm(value);
-
-          if (!value.trim()) {
-            setProducts([]);
-            setHasSearched(false);
-            setLoading(false);
-            setError("");
-          } else {
-            setLoading(true);
-            setHasSearched(false);
-            setError("");
-          }
+          setTerm(e.target.value);
         }}
         placeholder="SEARCH PRODUCTS..."
         className={`w-full px-4 py-3 text-white outline-none ${spaceMono.className}`}

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  fetchProductById,
-  selectProductStatus,
-  selectSingleProduct,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import { useEffect } from "react";
+import { useGetProductByIdQuery } from "@/feature/redux/product/productApi";
 import BreadCrumb from "./BreadCrumb";
 import ProductDetails from "./ProductDetails";
 import RelatedProduct from "./RelatedProduct";
@@ -16,24 +10,13 @@ interface Props {
 }
 
 export default function ProductClient({ id }: Props) {
-  const dispatch = useAppDispatch();
-  const product = useAppSelector(selectSingleProduct);
-  const status = useAppSelector(selectProductStatus);
+  const { data: product, isLoading } = useGetProductByIdQuery(id);
 
-  useEffect(() => {
-    dispatch(fetchProductById(id));
-  }, [id, dispatch]);
-
-  const isProductForCurrentRoute = product?._id === id;
-
-  if (
-    !isProductForCurrentRoute &&
-    (status === "loading" || status === "idle")
-  ) {
+  if (isLoading) {
     return <div>Loading product...</div>;
   }
 
-  if (!isProductForCurrentRoute || !product) {
+  if (!product) {
     return <div>Product not found</div>;
   }
 

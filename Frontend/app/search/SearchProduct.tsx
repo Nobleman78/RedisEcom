@@ -1,9 +1,7 @@
 "use client";
 
-import { searchProducts } from "@/feature/redux/product/productApi";
+import { useGetProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
-import type { Product } from "@/types/product";
-import { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import ProductGrid from "../collections/[category]/ProductGrid";
 
@@ -12,48 +10,23 @@ interface SearchProductProps {
 }
 
 const SearchProduct = ({ query }: SearchProductProps) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {
+    data,
+    isLoading: loading,
+    isError,
+  } = useGetProductsQuery(
+    {
+      search: query,
+      page: 1,
+      limit: 20,
+    },
+    { skip: !query },
+  );
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadProducts = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const data = await searchProducts({
-          search: query,
-          page: 1,
-          limit: 20,
-        });
-
-        if (!cancelled) {
-          setProducts(data.products ?? []);
-        }
-      } catch {
-        if (!cancelled) {
-          setProducts([]);
-          setError("Could not load products");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadProducts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [query]);
+  const products = data?.products ?? [];
+  const error = isError ? "Could not load products" : "";
 
   // 1. Get unique categories using Array.from and Set
-
   const uniqueProductTypes = Array.from(
     new Set(products.map((product) => product.productType).filter(Boolean)),
   );

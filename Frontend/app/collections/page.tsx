@@ -1,21 +1,12 @@
 "use client";
 
+import { useGetCategoriesQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Link from "next/link";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
-import {
-  fetchCategories,
-  selectCategories,
-} from "@/feature/redux/product/productSlice";
 
 const Page = () => {
-  const dispatch = useAppDispatch();
-  const categoris = useAppSelector(selectCategories);
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
+  const { data } = useGetCategoriesQuery();
+  const categoris = data?.categories ?? [];
 
   const colors = [
     "bg-red-300",

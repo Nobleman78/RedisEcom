@@ -1,24 +1,15 @@
 "use client";
 
-import {
-  fetchProductByStatus,
-  selectProductByStatus,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { useGetLatestProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
   const ITEMS_PER_PAGE = 4;
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectProductByStatus);
-
-  useEffect(() => {
-    dispatch(fetchProductByStatus());
-  }, [dispatch]);
+  const { data: products = [] } = useGetLatestProductsQuery();
 
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

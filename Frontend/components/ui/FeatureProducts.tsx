@@ -1,22 +1,13 @@
 "use client";
 
-import {
-  fetchFeaturedProduct,
-  selectFeaturedProducts,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { useGetFeaturedProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
 
 const FeatureProducts = () => {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectFeaturedProducts);
-
-  useEffect(() => {
-    dispatch(fetchFeaturedProduct());
-  }, [dispatch]);
+  const { data } = useGetFeaturedProductsQuery();
+  const products = data?.products ?? [];
 
   return (
     <div className="mt-12 sm:mt-16 md:mt-20">
