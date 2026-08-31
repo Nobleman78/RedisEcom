@@ -12,7 +12,14 @@ import { popPendingCartItem } from "@/hook/useCartGuard";
 import { clearCart } from "@/feature/redux/cart/cartSlice";
 import type { CartItem } from "@/feature/redux/cart/cartSlice";
 import { clearAuth } from "@/feature/redux/auth/authSlice";
+import {
+  fetchCategories,
+  selectCategories,
+} from "@/feature/redux/product/productSlice";
+import { searchProducts } from "@/feature/redux/product/productApi";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { normalizeMenuSlug } from "@/lib/productCatalog";
+import type { Product } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,6 +41,8 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const cartCount = useAppSelector((state) => state.cart.totalQuantity);
   const cartItems: CartItem[] = useAppSelector((state) => state.cart.cartItems);
+  const menuCategories = useAppSelector(selectCategories);
+  const [menuBrands, setMenuBrands] = useState<string[]>([]);
 
   // ── Auth: read from Redux global state ─────────────────────────────────────
   const user = useAppSelector((state) => state.auth.user);
@@ -48,6 +57,44 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadBrandOptions = async () => {
+      try {
+        const data = await searchProducts({ page: 1, limit: 200 });
+        if (!isMounted) return;
+
+        const productList = (data.products ?? []) as Product[];
+        const uniqueBrands = Array.from(
+          new Set(
+            productList
+              .map((product) => product.productType)
+              .filter(
+                (value): value is string =>
+                  typeof value === "string" && value.trim().length > 0,
+              ),
+          ),
+        ) as string[];
+
+        setMenuBrands(uniqueBrands.sort((a, b) => a.localeCompare(b)));
+      } catch {
+        if (isMounted) {
+          setMenuBrands([]);
+        }
+      }
+    };
+
+    loadBrandOptions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Replay any pending cart item saved before the guest was redirected to login
   useEffect(() => {
@@ -67,69 +114,22 @@ const Navbar = () => {
   }, [isLoggedIn, dispatch]);
 
   const navs = [
-    { label: user ? "ACCOUNT" : "LOGIN", href: user ? undefined : "/login" },
     { label: "SEARCH" },
     { label: "CART" },
   ];
 
   const menuItemsOne = [
-    { label: "LATEST", href: "/latest" },
+    { label: "LATEST", href: "/collections/latest" },
     {
       label: "BRAND",
-      dropdown: [
-        "ACMH",
-        "Aries",
-        "BoTT",
-        "BRAIN DEAD",
-        "By Parra",
-        "Carhartt WIP",
-        "Cav Empt",
-        "CMF Comfy Outdoor Garment",
-        "F.C. Real Bristol",
-        "Gramicci",
-        "Idea",
-        "Is-Ness",
-        "Never Never",
-        "No Problemo",
-        "PHINGERIN",
-        "ROA",
-        "Rostersox",
-        "Salomon",
-        "SAN SAN GEAR",
-        "SOPHNET",
-        "Sub Sun",
-        "SUICOKE",
-        "The Trilogy Tapes",
-        "The Salvages",
-        "UMBRO BY SLAM JAM",
-        "Uniform",
-      ],
+      dropdown: menuBrands.length > 0 ? menuBrands : ["Featured"],
     },
     {
       label: "CATEGORIES",
-      dropdown: [
-        "SALE",
-        "Accessories",
-        "Apothecary",
-        "Bags",
-        "Denim",
-        "Footwear",
-        "Gift Cards",
-        "Headwear",
-        "Homeware",
-        "Jewellery",
-        "Outerwear",
-        "Print",
-        "Scarves & Gloves",
-        "Shirts",
-        "Shorts",
-        "Socks",
-        "Sunglasses",
-        "Sweats & Hoodies",
-        "T-Shirts",
-        "Trousers",
-        "Underwear",
-      ],
+      dropdown:
+        menuCategories.length > 0
+          ? menuCategories
+          : ["Accessories", "Footwear", "T-Shirts", "Outerwear"],
     },
     {
       label: "Collections",
@@ -283,22 +283,7 @@ const Navbar = () => {
           <div className="hidden items-center gap-3 lg:gap-5 lg:flex">
             {navs.map((nav, index) => (
               <div key={index}>
-                {nav.label === "ACCOUNT" ? (
-                  <button
-                    type="button"
-                    onClick={openAccount}
-                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
-                  >
-                    ACCOUNT
-                  </button>
-                ) : nav.href ? (
-                  <Link
-                    href={nav.href}
-                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
-                  >
-                    {nav.label}
-                  </Link>
-                ) : nav.label === "SEARCH" ? (
+                {nav.label === "SEARCH" ? (
                   <button
                     type="button"
                     onClick={openSearch}
@@ -311,7 +296,7 @@ const Navbar = () => {
                     onClick={openCart}
                     className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
-                    {nav.label === "CART" ? `CART (${cartCount})` : nav.label}
+                    {`CART (${cartCount})`}
                   </button>
                 )}
               </div>
@@ -362,21 +347,45 @@ const Navbar = () => {
         </div>
         {/* Menubar One */}
         <nav className="mt-15 flex flex-col gap-3">
-          {menuItemsOne.map((item) =>
-            item.href ? (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setIsOpenMenubar(false)}
-                className={`${Nimbus.className} rounded-md px-2 py-2 text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
-                  isOpenMenubar
-                    ? "translate-y-0 opacity-100"
-                    : "pointer-events-none translate-y-3 opacity-0"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ) : (
+          {menuItemsOne.map((item) => {
+            if (item.action === "account") {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => {
+                    setIsOpenMenubar(false);
+                    openAccount();
+                  }}
+                  className={`${Nimbus.className} rounded-md px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
+                    isOpenMenubar
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-3 opacity-0"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            }
+
+            if (item.href) {
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsOpenMenubar(false)}
+                  className={`${Nimbus.className} rounded-md px-2 py-2 text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
+                    isOpenMenubar
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-3 opacity-0"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            }
+
+            return (
               <div key={item.label} className="relative">
                 <button
                   type="button"
@@ -390,10 +399,39 @@ const Navbar = () => {
                   {item.label}
                 </button>
               </div>
-            ),
-          )}
+            );
+          })}
         </nav>
         {/* Menubar two */}
+        {user ? (
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpenMenubar(false);
+              openAccount();
+            }}
+            className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
+              isOpenMenubar
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none translate-y-3 opacity-0"
+            }`}
+          >
+            ACCOUNT
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            onClick={() => setIsOpenMenubar(false)}
+            className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
+              isOpenMenubar
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none translate-y-3 opacity-0"
+            }`}
+          >
+            LOGIN
+          </Link>
+        )}
+
         <nav className="mt-15 flex flex-col gap-3">
           {menuItemsTwo.map((item) => (
             <Link
@@ -426,7 +464,7 @@ const Navbar = () => {
                 ?.dropdown?.map((dropdownItem) => (
                   <Link
                     key={dropdownItem}
-                    href={`/collections/${dropdownItem.toLowerCase().trim().replace(/\s+/g, "-")}`}
+                    href={`/collections/${normalizeMenuSlug(dropdownItem)}`}
                     onClick={() => setIsOpenMenubar(false)}
                     className={`${Nimbus.className} transition hover:text-gray-300`}
                   >
