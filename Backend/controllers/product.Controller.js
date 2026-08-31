@@ -95,6 +95,7 @@ export const createProduct = async (req, res) => {
       image,
       category,
       productType,
+      size = [],
       isFeatured,
     } = req.body;
 
@@ -113,6 +114,7 @@ export const createProduct = async (req, res) => {
       image: imageUrl,
       category,
       productType,
+      size: Array.isArray(size) ? size : [size].filter(Boolean),
       isFeatured,
     });
 

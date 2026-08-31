@@ -8,7 +8,8 @@ import {
 } from "@/feature/redux/product/productSlice";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
-import { useEffect } from "react";
+import { filterProducts, getUniqueValues, sortProducts } from "@/lib/productCatalog";
+import { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "./BreadCrumb";
 import ProductGrid from "./ProductGrid";
 import SortAndFilter from "./SortAndFilter";
@@ -21,9 +22,22 @@ const CategoryClient = ({ category }: Props) => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
   const status = useAppSelector(selectProductStatus);
+  const [sortValue, setSortValue] = useState("most-relevant");
+  const [draftProductTypes, setDraftProductTypes] = useState<string[]>([]);
+  const [draftSizes, setDraftSizes] = useState<string[]>([]);
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const isFeatured = category.toLowerCase() === "featured";
   const isLatest = category.toLowerCase() === "latest";
+
+  useEffect(() => {
+    setDraftProductTypes([]);
+    setDraftSizes([]);
+    setSelectedProductTypes([]);
+    setSelectedSizes([]);
+    setSortValue("most-relevant");
+  }, [category, isFeatured, isLatest]);
 
   useEffect(() => {
     if (isFeatured) {
@@ -38,6 +52,17 @@ const CategoryClient = ({ category }: Props) => {
       dispatch(fetchProductByStatus());
     }
   }, [dispatch, isLatest]);
+
+  const availableProductTypes = useMemo(
+    () => getUniqueValues(products, "productType"),
+    [products],
+  );
+  const availableSizes = useMemo(() => getUniqueValues(products, "size"), [products]);
+
+  const visibleProducts = useMemo(() => {
+    const filtered = filterProducts(products, selectedProductTypes, selectedSizes);
+    return sortProducts(filtered, sortValue);
+  }, [products, selectedProductTypes, selectedSizes, sortValue]);
 
   const slogan = isFeatured
     ? "Discover our handpicked featured items!"
@@ -61,7 +86,32 @@ const CategoryClient = ({ category }: Props) => {
         </p>
       </div>
 
-      <SortAndFilter totalProducts={products.length} />
+      <SortAndFilter
+        totalProducts={visibleProducts.length}
+        productTypes={availableProductTypes}
+        sizes={availableSizes}
+        selectedProductTypes={draftProductTypes}
+        selectedSizes={draftSizes}
+        onSortChange={setSortValue}
+        onApplyFilters={() => {
+          setSelectedProductTypes(draftProductTypes);
+          setSelectedSizes(draftSizes);
+        }}
+        onToggleProductType={(value) =>
+          setDraftProductTypes((prev) =>
+            prev.includes(value)
+              ? prev.filter((item) => item !== value)
+              : [...prev, value],
+          )
+        }
+        onToggleSize={(value) =>
+          setDraftSizes((prev) =>
+            prev.includes(value)
+              ? prev.filter((item) => item !== value)
+              : [...prev, value],
+          )
+        }
+      />
 
       {status === "loading" ? (
         <div
@@ -70,7 +120,7 @@ const CategoryClient = ({ category }: Props) => {
           Loading products...
         </div>
       ) : (
-        <ProductGrid products={products} />
+        <ProductGrid products={visibleProducts} />
       )}
     </div>
   );
