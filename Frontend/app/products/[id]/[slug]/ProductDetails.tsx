@@ -2,10 +2,11 @@
 import { addToCart } from "@/feature/redux/cart/cartApi";
 import { useAppDispatch } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
-import { terms } from "@/public/terms/terms";
 import useCartGuard from "@/hook/useCartGuard";
+import { terms } from "@/public/terms/terms";
 import Image from "next/image";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 interface Props {
   id: string;
@@ -43,15 +44,25 @@ const ProductDetails = ({
     setProductItem((prev) => prev + 1);
   };
   const minusProduct = () => {
-    if (productItem > 0) {
+    if (productItem > 1) {
       setProductItem((prev) => prev - 1);
     }
   };
 
   // ── Cart guard: redirects guests to login, adds directly for logged-in users
-  const guardedAddToCart = useCartGuard(({ productId, quantity, size }) => {
-    dispatch(addToCart({ productId, quantity, size }));
-  });
+  const guardedAddToCart = useCartGuard(
+    async ({ productId, quantity, size }) => {
+      try {
+        await dispatch(addToCart({ productId, quantity, size })).unwrap();
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: typeof error === "string" ? error : "Could not add to cart",
+        });
+      }
+    },
+  );
 
   const handleAddToCart = () => {
     guardedAddToCart({
@@ -63,7 +74,7 @@ const ProductDetails = ({
 
   return (
     <div className="border-b border-gray-300 py-5">
-      <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-10 md:gap-20 my-10 ">
+      <div className="mx-auto my-8 flex max-w-6xl flex-col gap-8 px-4 md:my-10 md:flex-row md:gap-12 md:px-8 lg:gap-16">
         <div className="relative aspect-square w-full max-w-xl self-start overflow-hidden bg-gray-50 ">
           <Image
             src={image}
@@ -75,7 +86,7 @@ const ProductDetails = ({
         </div>
 
         <div className={`${spaceMono.className}`}>
-          <h2 className="text-2xl mb-2">{name}</h2>
+          <h2 className="mb-2 text-xl sm:text-2xl">{name}</h2>
           <div className="flex flex-row items-center gap-3">
             <p className="text-xl mb-1 text-red-400">
               ${((price * discount) / 100).toFixed(2)}
@@ -111,11 +122,17 @@ const ProductDetails = ({
           )}
           {/* Plus and minus button */}
           <div className="mt-10 flex gap-5">
-            <button className="text-2xl cursor-pointer" onClick={minusProduct}>
+            <button
+              className="flex size-10 items-center justify-center text-xl cursor-pointer"
+              onClick={minusProduct}
+            >
               -
             </button>
             <span className="border px-5 py-2">{productItem}</span>
-            <button className="cursor-pointer" onClick={plusProduct}>
+            <button
+              className="flex size-10 items-center justify-center text-xl cursor-pointer"
+              onClick={plusProduct}
+            >
               +
             </button>
           </div>
@@ -136,12 +153,12 @@ const ProductDetails = ({
           {/* Shipping and return tearm and conditions */}
           <div>
             <div className="border-t mt-10 border-b">
-              <div className="flex items-center justify-between">
+              <div
+                onClick={() => handleOpenTermsForShippingAndTax("shipping")}
+                className="flex items-center justify-between cursor-pointer"
+              >
                 <h2 className="uppercase py-2">Shipping & Returns</h2>
-                <button
-                  onClick={() => handleOpenTermsForShippingAndTax("shipping")}
-                  className="cursor-pointer text-xl"
-                >
+                <button className="cursor-pointer text-xl">
                   {openTerm === "shipping" ? "-" : "+"}
                 </button>
               </div>
@@ -153,12 +170,12 @@ const ProductDetails = ({
               )}
             </div>
             <div>
-              <div className="flex items-center justify-between">
+              <div
+                onClick={() => handleOpenTermsForShippingAndTax("tax")}
+                className="flex items-center justify-between cursor-pointer"
+              >
                 <h2 className="uppercase py-2">Tax</h2>
-                <button
-                  onClick={() => handleOpenTermsForShippingAndTax("tax")}
-                  className="cursor-pointer text-xl"
-                >
+                <button className="cursor-pointer text-xl">
                   {openTerm === "tax" ? "-" : "+"}
                 </button>
               </div>

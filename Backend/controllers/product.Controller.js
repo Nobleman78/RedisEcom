@@ -88,15 +88,20 @@ export const getFeaturedProducts = async (req, res) => {
 // create product
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, description, image, category, isFeatured } = req.body;
+    const {
+      name,
+      price,
+      description,
+      image,
+      category,
+      productType,
+      size = [],
+      isFeatured,
+    } = req.body;
 
     let imageUrl = "";
 
     if (image) {
-      // 1. Convert base64/data URL → Blob
-      const response = await fetch(image);
-      const imageBlob = await response.blob();
-
       const cloudinaryResponse = await cloudinary.uploader.upload(image);
       imageUrl = cloudinaryResponse.secure_url;
     }
@@ -108,6 +113,8 @@ export const createProduct = async (req, res) => {
       description,
       image: imageUrl,
       category,
+      productType,
+      size: Array.isArray(size) ? size : [size].filter(Boolean),
       isFeatured,
     });
 
@@ -209,3 +216,13 @@ async function updateFeaturedProductsCache() {
     console.error("Error updating featured products cache:", error);
   }
 }
+
+// get latestProduct
+export const getLatestProducts = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 }).limit(10);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

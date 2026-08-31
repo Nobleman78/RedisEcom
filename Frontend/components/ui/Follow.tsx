@@ -45,42 +45,61 @@ const Follow = () => {
   ];
 
   return (
-    <div className="my-20">
-      <div className="max-w-xs mx-auto flex flex-row  justify-between mt-10">
+    <footer className="mt-16 border-t border-black/10 px-5 py-8 sm:mt-20 sm:py-10">
+      <nav
+        aria-label="Social media links"
+        className="mx-auto flex w-fit max-w-full justify-center gap-1 sm:gap-3"
+      >
         {socialLinks.map((item, index) => {
           const Icon = item.icon;
 
           return (
-            <Link href={item.url} key={index} target="_blank">
+            <Link
+              href={item.url}
+              key={index}
+              target="_blank"
+              className="flex min-h-9 min-w-9 items-center justify-center transition-opacity hover:opacity-60"
+              aria-label={`Follow Never Never on ${item.icon.name}`}
+            >
               <Icon size={18} className="cursor-pointer" />
             </Link>
           );
         })}
-      </div>
+      </nav>
 
-      {/* button div */}
-      <div className="max-w-lg mx-auto flex flex-row  justify-between mt-10">
+      <nav
+        aria-label="Customer service links"
+        className="mx-auto mt-6 grid w-full max-w-xl grid-cols-2 gap-x-6 gap-y-1 text-center sm:mt-8 sm:grid-cols-4 sm:gap-4"
+      >
         {buttons.map((item, index) => {
           return item.url ? (
-            <Link href={item.url} key={index} target="_blank">
-              <p className={`text-xs cursor-pointer ${spaceMono.className}`}>
+            <Link
+              href={item.url}
+              key={index}
+              className="flex min-h-9 items-center justify-center px-1 transition-opacity hover:opacity-60"
+            >
+              <p
+                className={`text-[11px] leading-5 sm:text-xs ${spaceMono.className}`}
+              >
                 {item.title}
               </p>
             </Link>
           ) : (
             <p
-              className={`text-xs cursor-pointer ${spaceMono.className}`}
+              className={`text-[11px] leading-5 sm:text-xs ${spaceMono.className}`}
               key={index}
             >
               {item.title}
             </p>
           );
         })}
-      </div>
-      <p className={`text-center uppercase ${spaceMono.className} text-xs mt-5`}>
+      </nav>
+      <p
+        className={`mt-4 text-center text-[10px] uppercase tracking-[0.08em] leading-5 text-black/60 sm:text-[11px] ${spaceMono.className}`}
+      >
         © 2026 - Never Never
       </p>
-    </div>
+    </footer>
   );
 };
 

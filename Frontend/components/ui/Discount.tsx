@@ -6,10 +6,10 @@ const Discount = () => {
     <div>
       <Link
         href="/collections/sale"
-        className="block bg-[#CEF25E] max-w-6xl mx-4 md:mx-auto h-[300px] md:h-150 my-10 md:my-20 relative"
+        className="relative mx-4 my-10 block h-56 max-w-6xl bg-[#CEF25E] sm:h-72 md:mx-auto md:my-20 md:h-96 lg:h-[600px]"
       >
         <h2
-          className={`uppercase absolute top-1/3 text-4xl md:text-6xl text-center w-full left-1/2 -translate-x-1/2 text-white italic font-bold ${Nimbus.className}`}
+          className={`absolute left-1/2 top-1/3 w-full max-w-[90%] -translate-x-1/2 text-center text-2xl font-bold uppercase italic text-white sm:text-4xl md:text-6xl ${Nimbus.className}`}
         >
           Summer sale
         </h2>

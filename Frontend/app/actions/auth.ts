@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 
 
-export async function loginAction(formData: FormData){
+export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -18,7 +18,7 @@ export async function loginAction(formData: FormData){
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:3000/api/auth/login", {
+    const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -83,7 +83,7 @@ export async function signupAction(formData: FormData): Promise<void> {
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:3000/api/auth/signup", {
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

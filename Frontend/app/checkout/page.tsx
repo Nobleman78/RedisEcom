@@ -17,19 +17,19 @@ const CheckoutPage = () => {
   }, [dispatch]);
 
   return (
-    <main className="min-h-screen bg-[#f4f3ef] px-5 pb-16 pt-36 text-black sm:px-8 lg:px-16">
+    <main className="min-h-screen bg-[#f4f3ef] px-5 pb-16 pt-28 text-black sm:px-8 sm:pt-32 lg:px-16">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 flex items-end justify-between border-b border-gray-300 pb-5">
           <div>
             <h1
-              className={`${spaceMono.className} text-4xl uppercase tracking-tight sm:text-6xl`}
+              className={`${spaceMono.className} text-2xl uppercase tracking-tight sm:text-4xl lg:text-5xl`}
             >
               Checkout
             </h1>
           </div>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-[1fr_390px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_390px] lg:gap-10">
           <section>
             <div className="mb-8 flex items-center justify-between">
               <h2
@@ -112,7 +112,7 @@ const CheckoutPage = () => {
               <span className={`${spaceMono.className} text-sm uppercase`}>
                 Total
               </span>
-              <span className={`${spaceMono.className} text-2xl`}>
+              <span className={`${spaceMono.className} text-xl sm:text-2xl`}>
                 ${totalAmount.toFixed(2)}
               </span>
             </div>

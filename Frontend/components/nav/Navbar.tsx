@@ -1,22 +1,38 @@
 "use client";
 import { logoutAction } from "@/app/actions/auth";
-import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
 import { fetchAuthProfile } from "@/feature/api/apiSlice";
+import { clearAuth } from "@/feature/redux/auth/authSlice";
 import {
+  addToCart,
   fetchCart,
   removeCartItem,
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
-import { clearCart } from "@/feature/redux/cart/cartSlice";
 import type { CartItem } from "@/feature/redux/cart/cartSlice";
-import { clearAuth } from "@/feature/redux/auth/authSlice";
+import { clearCart } from "@/feature/redux/cart/cartSlice";
+import { searchProducts } from "@/feature/redux/product/productApi";
+import {
+  fetchCategories,
+  selectCategories,
+} from "@/feature/redux/product/productSlice";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
+import { popPendingCartItem } from "@/hook/useCartGuard";
+import { normalizeMenuSlug } from "@/lib/productCatalog";
+import type { Product } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { FiMenu, FiShoppingBag, FiX, FiArrowLeft, FiSearch } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiMenu,
+  FiSearch,
+  FiShoppingBag,
+  FiX,
+} from "react-icons/fi";
+import Swal from "sweetalert2";
 import Search from "../search/Search";
 
 const Navbar = () => {
@@ -25,6 +41,8 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const cartCount = useAppSelector((state) => state.cart.totalQuantity);
   const cartItems: CartItem[] = useAppSelector((state) => state.cart.cartItems);
+  const menuCategories = useAppSelector(selectCategories);
+  const [menuBrands, setMenuBrands] = useState<string[]>([]);
 
   // ── Auth: read from Redux global state ─────────────────────────────────────
   const user = useAppSelector((state) => state.auth.user);
@@ -40,70 +58,75 @@ const Navbar = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  const navs = [
-    { label: user ? "ACCOUNT" : "LOGIN", href: user ? undefined : "/login" },
-    { label: "SEARCH" },
-    { label: "CART" },
-  ];
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadBrandOptions = async () => {
+      try {
+        const data = await searchProducts({ page: 1, limit: 200 });
+        if (!isMounted) return;
+
+        const productList = (data.products ?? []) as Product[];
+        const uniqueBrands = Array.from(
+          new Set(
+            productList
+              .map((product) => product.productType)
+              .filter(
+                (value): value is string =>
+                  typeof value === "string" && value.trim().length > 0,
+              ),
+          ),
+        ) as string[];
+
+        setMenuBrands(uniqueBrands.sort((a, b) => a.localeCompare(b)));
+      } catch {
+        if (isMounted) {
+          setMenuBrands([]);
+        }
+      }
+    };
+
+    loadBrandOptions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Replay any pending cart item saved before the guest was redirected to login
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const pending = popPendingCartItem();
+    if (pending) {
+      dispatch(addToCart(pending))
+        .unwrap()
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: typeof error === "string" ? error : "Could not add to cart",
+          });
+        });
+    }
+  }, [isLoggedIn, dispatch]);
+
+  const navs = [{ label: "ACCOUNT" }, { label: "SEARCH" }, { label: "CART" }];
 
   const menuItemsOne = [
-    { label: "LATEST", href: "/latest" },
+    { label: "LATEST", href: "/collections/latest" },
     {
       label: "BRAND",
-      dropdown: [
-        "ACMH",
-        "Aries",
-        "BoTT",
-        "BRAIN DEAD",
-        "By Parra",
-        "Carhartt WIP",
-        "Cav Empt",
-        "CMF Comfy Outdoor Garment",
-        "F.C. Real Bristol",
-        "Gramicci",
-        "Idea",
-        "Is-Ness",
-        "Never Never",
-        "No Problemo",
-        "PHINGERIN",
-        "ROA",
-        "Rostersox",
-        "Salomon",
-        "SAN SAN GEAR",
-        "SOPHNET",
-        "Sub Sun",
-        "SUICOKE",
-        "The Trilogy Tapes",
-        "The Salvages",
-        "UMBRO BY SLAM JAM",
-        "Uniform",
-      ],
+      dropdown: menuBrands.length > 0 ? menuBrands : ["Featured"],
     },
     {
       label: "CATEGORIES",
-      dropdown: [
-        "SALE",
-        "Accessories",
-        "Apothecary",
-        "Bags",
-        "Denim",
-        "Footwear",
-        "Gift Cards",
-        "Headwear",
-        "Homeware",
-        "Jewellery",
-        "Outerwear",
-        "Print",
-        "Scarves & Gloves",
-        "Shirts",
-        "Shorts",
-        "Socks",
-        "Sunglasses",
-        "Sweats & Hoodies",
-        "T-Shirts",
-        "Trousers",
-        "Underwear",
-      ],
+      dropdown:
+        menuCategories.length > 0
+          ? menuCategories
+          : ["Accessories", "Footwear", "T-Shirts", "Outerwear"],
     },
     {
       label: "Collections",
@@ -204,7 +227,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 z-[100] w-full bg-black text-white shadow-sm">
+    <div className="fixed left-0 top-0 z-100 w-full bg-black text-white shadow-sm">
       <div className="flex flex-col items-center justify-center">
         <button className="group  mt-5 cursor-pointer text-center text-xs italic">
           <span className="block">SUMMER SALE - NOW UP TO 50% OFF</span>
@@ -230,7 +253,7 @@ const Navbar = () => {
           <Link
             href="/"
             onClick={() => router.push("/")}
-            className={`${Eurostil.className} cursor-pointer text-2xl lg:text-4xl`}
+            className={`${Eurostil.className} cursor-pointer text-xl lg:text-4xl`}
           >
             NEVER NEVER
           </Link>
@@ -260,18 +283,17 @@ const Navbar = () => {
                 {nav.label === "ACCOUNT" ? (
                   <button
                     type="button"
-                    onClick={openAccount}
+                    onClick={() => {
+                      if (user) {
+                        openAccount();
+                      } else {
+                        router.push("/login");
+                      }
+                    }}
                     className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
                     ACCOUNT
                   </button>
-                ) : nav.href ? (
-                  <Link
-                    href={nav.href}
-                    className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
-                  >
-                    {nav.label}
-                  </Link>
                 ) : nav.label === "SEARCH" ? (
                   <button
                     type="button"
@@ -285,7 +307,7 @@ const Navbar = () => {
                     onClick={openCart}
                     className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
-                    {nav.label === "CART" ? `CART (${cartCount})` : nav.label}
+                    {`CART (${cartCount})`}
                   </button>
                 )}
               </div>
@@ -336,26 +358,30 @@ const Navbar = () => {
         </div>
         {/* Menubar One */}
         <nav className="mt-15 flex flex-col gap-3">
-          {menuItemsOne.map((item) =>
-            item.href ? (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setIsOpenMenubar(false)}
-                className={`${Nimbus.className} rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
-                  isOpenMenubar
-                    ? "translate-y-0 opacity-100"
-                    : "pointer-events-none translate-y-3 opacity-0"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ) : (
+          {menuItemsOne.map((item) => {
+            if (item.href) {
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsOpenMenubar(false)}
+                  className={`${Nimbus.className} rounded-md px-2 py-2 text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
+                    isOpenMenubar
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-3 opacity-0"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            }
+
+            return (
               <div key={item.label} className="relative">
                 <button
                   type="button"
                   onClick={() => toggleDropdown(item.label)}
-                  className={`${Nimbus.className} cursor-pointer w-full text-left rounded-md px-2 py-3 text-3xl uppercase tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
+                  className={`${Nimbus.className} w-full cursor-pointer rounded-md px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
                     isOpenMenubar
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none translate-y-3 opacity-0"
@@ -364,17 +390,36 @@ const Navbar = () => {
                   {item.label}
                 </button>
               </div>
-            ),
-          )}
+            );
+          })}
         </nav>
         {/* Menubar two */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpenMenubar(false);
+            if (user) {
+              openAccount();
+            } else {
+              router.push("/login");
+            }
+          }}
+          className={`md:hidden ${Nimbus.className} mt-15 rounded px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
+            isOpenMenubar
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-3 opacity-0"
+          }`}
+        >
+          ACCOUNT
+        </button>
+
         <nav className="mt-15 flex flex-col gap-3">
           {menuItemsTwo.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               onClick={() => setIsOpenMenubar(false)}
-              className={`${Nimbus.className} rounded px-2 p-3 text-3xl tracking-widest transition-all duration-500 ease-out hover:text-gray-400 ${
+              className={`${Nimbus.className} rounded px-2 py-2 text-base tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:text-xl ${
                 isOpenMenubar
                   ? "translate-y-0 opacity-100"
                   : "pointer-events-none translate-y-3 opacity-0"
@@ -388,19 +433,19 @@ const Navbar = () => {
         {/* dropdown menu */}
         {activeDropdown && (
           <div className="absolute left-0 sm:left-full top-0 z-50 flex h-full w-full sm:w-[85vw] sm:max-w-sm flex-col gap-4 overflow-y-auto border-l border-white/10 bg-black p-8 text-left shadow-2xl">
-            <button 
-              onClick={() => setActiveDropdown(null)} 
+            <button
+              onClick={() => setActiveDropdown(null)}
               className="sm:hidden text-gray-400 text-sm uppercase mb-4 text-left hover:text-white flex items-center gap-2"
             >
               <FiArrowLeft size={16} /> BACK
             </button>
-            <div className="grid gap-4 text-2xl font-semibold uppercase text-white">
+            <div className="grid gap-4 text-base font-semibold uppercase text-white sm:text-lg">
               {menuItemsOne
                 .find((item) => item.label === activeDropdown)
                 ?.dropdown?.map((dropdownItem) => (
                   <Link
                     key={dropdownItem}
-                    href={`/collections/${dropdownItem.toLowerCase().trim().replace(/\s+/g, "-")}`}
+                    href={`/collections/${normalizeMenuSlug(dropdownItem)}`}
                     onClick={() => setIsOpenMenubar(false)}
                     className={`${Nimbus.className} transition hover:text-gray-300`}
                   >
@@ -545,7 +590,9 @@ const Navbar = () => {
           {!isLoggedIn ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <FiShoppingBag size={40} className="text-gray-500" />
-              <p className={`${spaceMono.className} text-sm uppercase tracking-wide text-white`}>
+              <p
+                className={`${spaceMono.className} text-sm uppercase tracking-wide text-white`}
+              >
                 Sign in to view your cart
               </p>
               <p className={`${spaceMono.className} text-xs text-gray-400`}>

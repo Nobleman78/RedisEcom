@@ -65,3 +65,24 @@ export async function getCategoriesApi() {
   }
   return res.json();
 }
+export async function getLatestProduct(){
+  const res = await fetch(`${PRODUCTS_URL}/latest`,{
+    credentials:"include"
+  })
+  if(!res.ok){
+    const text = await res.text().catch(()=>"");
+    throw new Error(`Failed to fetch latest product: ${res.status} ${text}`)
+  }
+  return res.json()
+}
+
+export async function getFeaturedProduct(){
+  const res = await fetch(`${PRODUCTS_URL}/featured`,{
+    credentials:"include"
+  })
+  if(!res.ok){
+    const text = await res.text().catch(()=>"")
+    throw new Error(`Failed to fetch featured product : ${res.status} ${text}`)
+  }
+  return res.json()
+}

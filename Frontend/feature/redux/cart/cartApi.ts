@@ -70,17 +70,41 @@ const ensureBackendSession = async () => {
 };
 
 const requestCart = async (input: RequestInfo | URL, init?: RequestInit) => {
-  await ensureBackendSession();
+  try {
+    await ensureBackendSession();
+  } catch {
+    // Supabase session not available (e.g. email/password user) — continue
+  }
+
   let response = await fetch(input, init);
 
   if (response.status !== 401) {
     return response;
   }
 
+  // 401 — try re-establishing the Google/Supabase session first
   backendSessionReady = false;
-  if (await ensureBackendSession()) {
+  try {
+    if (await ensureBackendSession()) {
+      response = await fetch(input, init);
+      if (response.status !== 401) {
+        return response;
+      }
+    }
+  } catch {
+    // Supabase unavailable — fall through to JWT refresh
+  }
+
+  // Fallback: refresh the JWT access token (email/password users)
+  const refreshRes = await fetch("/api/auth/refresh-token", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (refreshRes.ok) {
     response = await fetch(input, init);
   }
+
   return response;
 };
 // fetch the cart

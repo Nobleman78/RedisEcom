@@ -12,7 +12,7 @@ const page = async ({ searchParams }: PageProps) => {
   return (
     <div>
       <div
-        className={`${michroma.className} cursor-pointer text-3xl text-center my-10`}
+        className={`${michroma.className} my-6 cursor-pointer text-center text-2xl sm:my-8 sm:text-3xl`}
       >
         <Link href="/">
           <h2>NEVER</h2>
@@ -22,7 +22,7 @@ const page = async ({ searchParams }: PageProps) => {
 
       {/* Sign up */}
 
-      <div className="max-w-md mx-auto space-y-5 mt-20">
+      <div className="mx-auto mt-12 max-w-md space-y-5 px-5 sm:mt-16 sm:px-0">
         <h2 className={`${spaceMono.className}`}>Sign up</h2>
 
         {/* Error message from failed registration */}
@@ -72,7 +72,7 @@ const page = async ({ searchParams }: PageProps) => {
 
         {/* Already have an account */}
         <div
-          className={`${spaceMono.className} flex flex-row items-center gap-10 mt-5`}
+          className={`${spaceMono.className} mt-5 flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4`}
         >
           <h2>Already Have an Account ?</h2>
           <Link href="/login" className="underline">
@@ -85,4 +85,3 @@ const page = async ({ searchParams }: PageProps) => {
 };
 
 export default page;
-

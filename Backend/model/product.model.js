@@ -22,6 +22,14 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    productType: {
+      type: String,
+      required: true,
+    },
+    size: {
+      type: [String],
+      default: [],
+    },
     isFeatured: {
       type: Boolean,
       default: false,

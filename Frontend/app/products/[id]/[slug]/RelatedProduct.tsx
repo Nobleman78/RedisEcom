@@ -42,13 +42,15 @@ const RelatedProduct = ({ category }: Props) => {
   const pageIndex = startIndex / ITEMS_PER_PAGE;
 
   return (
-    <div className="mt-16 ">
-      <h2 className={`${spaceMono.className} text-center text-3xl`}>
+    <div className="mt-10 sm:mt-12 md:mt-16">
+      <h2
+        className={`${spaceMono.className} text-center text-xl sm:text-2xl md:text-3xl`}
+      >
         RELATED PRODUCTS
       </h2>
-      <div className="mt-10 mx-4 md:mx-10 relative overflow-hidden pb-4">
+      <div className="relative mx-4 mt-6 overflow-hidden pb-4 sm:mt-8 md:mx-10 md:mt-10">
         <div
-          className="flex gap-4 md:gap-10 transition-transform duration-500 ease-in-out overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none max-md:[transform:none!important] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 md:gap-10 transition-transform duration-500 ease-in-out overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none max-md:transform:none!important [&::-webkit-scrollbar]:hidden"
           style={{
             transform: `translateX(calc(-${pageIndex * 100}% - ${pageIndex * 40}px))`,
           }}
@@ -70,7 +72,7 @@ const RelatedProduct = ({ category }: Props) => {
                   onMouseEnter={() => setHoveredIndex(actualIndex)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <div className="relative aspect-[3/2] w-full overflow-hidden">
+                  <div className="relative aspect-3/2 w-full overflow-hidden">
                     <Image
                       src={product.image}
                       alt={product.name}
