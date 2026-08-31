@@ -9,7 +9,7 @@ export default function CategoryPage({ params }: Props) {
   const { category } = use(params);
   return (
     <div className="mt-32">
-      <CategoryClient category={category} />
+      <CategoryClient key={category} category={category} />
     </div>
   );
 }

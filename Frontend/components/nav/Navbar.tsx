@@ -1,23 +1,23 @@
 "use client";
 import { logoutAction } from "@/app/actions/auth";
-import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
 import { fetchAuthProfile } from "@/feature/api/apiSlice";
+import { clearAuth } from "@/feature/redux/auth/authSlice";
 import {
   addToCart,
   fetchCart,
   removeCartItem,
   updateCartQuantity,
 } from "@/feature/redux/cart/cartApi";
-import { popPendingCartItem } from "@/hook/useCartGuard";
-import { clearCart } from "@/feature/redux/cart/cartSlice";
 import type { CartItem } from "@/feature/redux/cart/cartSlice";
-import { clearAuth } from "@/feature/redux/auth/authSlice";
+import { clearCart } from "@/feature/redux/cart/cartSlice";
+import { searchProducts } from "@/feature/redux/product/productApi";
 import {
   fetchCategories,
   selectCategories,
 } from "@/feature/redux/product/productSlice";
-import { searchProducts } from "@/feature/redux/product/productApi";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { Eurostil, Nimbus, spaceMono } from "@/fonts/Fonts";
+import { popPendingCartItem } from "@/hook/useCartGuard";
 import { normalizeMenuSlug } from "@/lib/productCatalog";
 import type { Product } from "@/types/product";
 import Image from "next/image";
@@ -26,14 +26,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
+  FiArrowLeft,
   FiMenu,
+  FiSearch,
   FiShoppingBag,
   FiX,
-  FiArrowLeft,
-  FiSearch,
 } from "react-icons/fi";
-import Search from "../search/Search";
 import Swal from "sweetalert2";
+import Search from "../search/Search";
 
 const Navbar = () => {
   const router = useRouter();
@@ -113,10 +113,7 @@ const Navbar = () => {
     }
   }, [isLoggedIn, dispatch]);
 
-  const navs = [
-    { label: "SEARCH" },
-    { label: "CART" },
-  ];
+  const navs = [{ label: "SEARCH" }, { label: "CART" }];
 
   const menuItemsOne = [
     { label: "LATEST", href: "/collections/latest" },
@@ -348,26 +345,6 @@ const Navbar = () => {
         {/* Menubar One */}
         <nav className="mt-15 flex flex-col gap-3">
           {menuItemsOne.map((item) => {
-            if (item.action === "account") {
-              return (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => {
-                    setIsOpenMenubar(false);
-                    openAccount();
-                  }}
-                  className={`${Nimbus.className} rounded-md px-2 py-2 text-left text-base uppercase tracking-wide transition-all duration-500 ease-out hover:text-gray-400 sm:py-2 sm:text-xl ${
-                    isOpenMenubar
-                      ? "translate-y-0 opacity-100"
-                      : "pointer-events-none translate-y-3 opacity-0"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            }
-
             if (item.href) {
               return (
                 <Link

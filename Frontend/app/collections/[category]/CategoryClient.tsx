@@ -8,7 +8,11 @@ import {
 } from "@/feature/redux/product/productSlice";
 import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
-import { filterProducts, getUniqueValues, sortProducts } from "@/lib/productCatalog";
+import {
+  filterProducts,
+  getUniqueValues,
+  sortProducts,
+} from "@/lib/productCatalog";
 import { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "./BreadCrumb";
 import ProductGrid from "./ProductGrid";
@@ -25,19 +29,13 @@ const CategoryClient = ({ category }: Props) => {
   const [sortValue, setSortValue] = useState("most-relevant");
   const [draftProductTypes, setDraftProductTypes] = useState<string[]>([]);
   const [draftSizes, setDraftSizes] = useState<string[]>([]);
-  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>(
+    [],
+  );
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const isFeatured = category.toLowerCase() === "featured";
   const isLatest = category.toLowerCase() === "latest";
-
-  useEffect(() => {
-    setDraftProductTypes([]);
-    setDraftSizes([]);
-    setSelectedProductTypes([]);
-    setSelectedSizes([]);
-    setSortValue("most-relevant");
-  }, [category, isFeatured, isLatest]);
 
   useEffect(() => {
     if (isFeatured) {
@@ -57,10 +55,17 @@ const CategoryClient = ({ category }: Props) => {
     () => getUniqueValues(products, "productType"),
     [products],
   );
-  const availableSizes = useMemo(() => getUniqueValues(products, "size"), [products]);
+  const availableSizes = useMemo(
+    () => getUniqueValues(products, "size"),
+    [products],
+  );
 
   const visibleProducts = useMemo(() => {
-    const filtered = filterProducts(products, selectedProductTypes, selectedSizes);
+    const filtered = filterProducts(
+      products,
+      selectedProductTypes,
+      selectedSizes,
+    );
     return sortProducts(filtered, sortValue);
   }, [products, selectedProductTypes, selectedSizes, sortValue]);
 

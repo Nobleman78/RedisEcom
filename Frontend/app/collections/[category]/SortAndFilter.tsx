@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { MdKeyboardArrowDown, MdOutlineKeyboardArrowDown } from "react-icons/md";
+import {
+  MdKeyboardArrowDown,
+  MdOutlineKeyboardArrowDown,
+} from "react-icons/md";
 
 import { spaceMono } from "@/fonts/Fonts";
 import sortOptions from "@/hook/sort/sortOption";
@@ -69,7 +72,8 @@ export default function SortAndFilter({
       }
     }
     document.addEventListener("mousedown", handleClickOutsideFilter);
-    return () => document.removeEventListener("mousedown", handleClickOutsideFilter);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutsideFilter);
   }, [openFilterOption]);
 
   const handleFilter = () => {
@@ -95,7 +99,9 @@ export default function SortAndFilter({
               SORT BY
             </button>
             <MdKeyboardArrowDown
-              className={openSortOption ? "rotate-180 transition-all" : "transition-all"}
+              className={
+                openSortOption ? "rotate-180 transition-all" : "transition-all"
+              }
             />
           </div>
 
@@ -116,11 +122,15 @@ export default function SortAndFilter({
           className="flex flex-1 cursor-pointer items-center justify-center border-r border-gray-200 py-3 text-gray-400 hover:text-black"
           onClick={() => setOpenSortOption((prev) => !prev)}
         >
-          <button className={`${spaceMono.className} flex items-center gap-2 text-sm`}>
+          <button
+            className={`${spaceMono.className} flex items-center gap-2 text-sm`}
+          >
             SORT BY
           </button>
           <MdKeyboardArrowDown
-            className={openSortOption ? "rotate-180 transition-all" : "transition-all"}
+            className={
+              openSortOption ? "rotate-180 transition-all" : "transition-all"
+            }
           />
         </div>
         <div
@@ -161,8 +171,13 @@ export default function SortAndFilter({
         }`}
       >
         <div className="flex items-center justify-between border-b border-gray-300 p-6">
-          <h2 className={`${spaceMono.className} uppercase text-lg`}>Filters</h2>
-          <FaX onClick={() => setOpenFilterOption(false)} className="cursor-pointer" />
+          <h2 className={`${spaceMono.className} uppercase text-lg`}>
+            Filters
+          </h2>
+          <FaX
+            onClick={() => setOpenFilterOption(false)}
+            className="cursor-pointer"
+          />
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
@@ -171,7 +186,9 @@ export default function SortAndFilter({
               onClick={() => setOpenProductType((prev) => !prev)}
               className="flex w-full cursor-pointer select-none items-center justify-between py-3 transition-all duration-300"
             >
-              <button className={`${spaceMono.className} cursor-pointer uppercase`}>
+              <button
+                className={`${spaceMono.className} cursor-pointer uppercase`}
+              >
                 Product Type
               </button>
               <MdOutlineKeyboardArrowDown
@@ -184,7 +201,9 @@ export default function SortAndFilter({
 
             <div
               className={`grid transition-all duration-300 ease-in-out ${
-                openProductType ? "mb-5 grid-rows-[1fr] opacity-100" : "mb-0 grid-rows-[0fr] opacity-0"
+                openProductType
+                  ? "mb-5 grid-rows-[1fr] opacity-100"
+                  : "mb-0 grid-rows-[0fr] opacity-0"
               }`}
             >
               <div className="overflow-hidden">
@@ -194,7 +213,9 @@ export default function SortAndFilter({
                       <button
                         onClick={() => onToggleProductType(type)}
                         className={`${spaceMono.className} flex cursor-pointer items-center py-1 text-gray-600 transition-all duration-200 hover:text-black ${
-                          selectedProductTypes.includes(type) ? "gap-2" : "gap-0"
+                          selectedProductTypes.includes(type)
+                            ? "gap-2"
+                            : "gap-0"
                         }`}
                       >
                         <span
@@ -209,7 +230,9 @@ export default function SortAndFilter({
                     </div>
                   ))
                 ) : (
-                  <p className="py-1 text-sm text-gray-500">No product types available</p>
+                  <p className="py-1 text-sm text-gray-500">
+                    No product types available
+                  </p>
                 )}
               </div>
             </div>
@@ -220,7 +243,9 @@ export default function SortAndFilter({
               onClick={() => setOpenSize((prev) => !prev)}
               className="flex cursor-pointer select-none items-center justify-between border-t border-gray-300 py-5"
             >
-              <button className={`${spaceMono.className} cursor-pointer uppercase`}>
+              <button
+                className={`${spaceMono.className} cursor-pointer uppercase`}
+              >
                 SIZE
               </button>
               <MdOutlineKeyboardArrowDown
@@ -233,7 +258,9 @@ export default function SortAndFilter({
 
             <div
               className={`grid transition-all duration-300 ease-in-out ${
-                openSize ? "grid-rows-[1fr] pb-5 opacity-100" : "grid-rows-[0fr] pb-0 opacity-0"
+                openSize
+                  ? "grid-rows-[1fr] pb-5 opacity-100"
+                  : "grid-rows-[0fr] pb-0 opacity-0"
               }`}
             >
               <div className="overflow-hidden">
@@ -258,7 +285,9 @@ export default function SortAndFilter({
                     </div>
                   ))
                 ) : (
-                  <p className="py-1 text-sm text-gray-500">No sizes available</p>
+                  <p className="py-1 text-sm text-gray-500">
+                    No sizes available
+                  </p>
                 )}
               </div>
             </div>
