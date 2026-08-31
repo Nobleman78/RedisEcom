@@ -135,7 +135,7 @@ const initialState: ProductState = {
   error: null,
   featuredItems: [],
 };
-
+// sdde
 const productSlice = createSlice({
   name: "products",
   initialState,
