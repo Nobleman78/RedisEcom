@@ -1,4 +1,5 @@
 "use client";
+import { ProductGridSkeleton } from "@/components/ui/ProductSkeleton";
 import {
   useGetFeaturedProductsQuery,
   useGetLatestProductsQuery,
@@ -59,9 +60,9 @@ const CategoryClient = ({ category }: Props) => {
   ]);
 
   const isLoading =
-    (isFeatured && featuredQuery.isLoading) ||
-    (isLatest && latestQuery.isLoading) ||
-    (isRegularCategory && categoryQuery.isLoading);
+    (isFeatured && !featuredQuery.isSuccess) ||
+    (isLatest && !latestQuery.isSuccess) ||
+    (isRegularCategory && !categoryQuery.isSuccess);
 
   const availableProductTypes = useMemo(
     () => getUniqueValues(products, "productType"),
@@ -131,11 +132,7 @@ const CategoryClient = ({ category }: Props) => {
       />
 
       {isLoading ? (
-        <div
-          className={`flex h-60 items-center justify-center text-center text-gray-500 ${spaceMono.className}`}
-        >
-          Loading products...
-        </div>
+        <ProductGridSkeleton count={6} />
       ) : (
         <ProductGrid products={visibleProducts} />
       )}

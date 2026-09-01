@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductGridSkeleton } from "@/components/ui/ProductSkeleton";
 import { useGetLatestProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
@@ -9,7 +10,13 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const Latestcollection = () => {
   const ITEMS_PER_PAGE = 4;
-  const { data: products = [] } = useGetLatestProductsQuery();
+  const {
+    data: products = [],
+    isLoading,
+    isFetching,
+    isSuccess,
+  } = useGetLatestProductsQuery();
+  const showSkeleton = !isSuccess;
 
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -28,6 +35,19 @@ const Latestcollection = () => {
 
   // Calculate current page number (0, 1, 2...)
   const pageIndex = startIndex / ITEMS_PER_PAGE;
+
+  if (showSkeleton || isLoading || isFetching || !isSuccess) {
+    return (
+      <div className="mt-12 sm:mt-16 md:mt-20">
+        <h2
+          className={`${spaceMono.className} text-center text-xl uppercase text-[#1c1c1c] sm:text-2xl md:text-3xl`}
+        >
+          Latest
+        </h2>
+        <ProductGridSkeleton count={3} />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-12 sm:mt-16 md:mt-20">

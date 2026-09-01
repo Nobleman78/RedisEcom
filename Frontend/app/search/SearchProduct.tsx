@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductGridSkeleton } from "@/components/ui/ProductSkeleton";
 import { useGetProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
@@ -13,7 +14,9 @@ const SearchProduct = ({ query }: SearchProductProps) => {
   const {
     data,
     isLoading: loading,
+    isFetching,
     isError,
+    isSuccess,
   } = useGetProductsQuery(
     {
       search: query,
@@ -24,6 +27,7 @@ const SearchProduct = ({ query }: SearchProductProps) => {
   );
 
   const products = data?.products ?? [];
+  const showSkeleton = !isSuccess;
   const error = isError ? "Could not load products" : "";
 
   // 1. Get unique categories using Array.from and Set
@@ -49,60 +53,62 @@ const SearchProduct = ({ query }: SearchProductProps) => {
         search
       </p>
       <p className={`${spaceMono.className} text-center mt-5`}>
-        {loading ? "Searching..." : `${products.length} Results for "${query}"`}
+        {showSkeleton
+          ? "Searching..."
+          : `${products.length} Results for "${query}"`}
       </p>
       {error ? (
         <p className={`${spaceMono.className} text-center mt-10`}>{error}</p>
-      ) : !loading && products.length === 0 ? (
+      ) : showSkeleton ? (
+        <ProductGridSkeleton count={6} />
+      ) : products.length === 0 ? (
         <p className={`${spaceMono.className} text-center mt-10`}>
           No products match &quot;{query}&quot;
         </p>
       ) : (
-        !loading && (
-          <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:gap-8">
-            <aside className="w-full lg:w-1/6 flex flex-col gap-4 mt-8">
-              <div className="flex flex-row items-center justify-between cursor-pointer">
-                <h3 className={`${spaceMono.className} uppercase text-lg`}>
-                  Product Type
-                </h3>
-                <MdOutlineKeyboardArrowDown />
-              </div>
-              {/* Category div */}
-              <div className="flex flex-col gap-2">
-                {uniqueProductTypes.map((producttype) => (
-                  <button
-                    key={producttype}
-                    className={`${spaceMono.className} text-left w-full capitalize cursor-pointer text-gray-600 hover:text-black`}
-                  >
-                    {producttype}
-                  </button>
-                ))}
-              </div>
-
-              {/* Size div */}
-
-              <div className="flex flex-row items-center justify-between cursor-pointer border-t border-gray-300 mt-5">
-                <h3 className={`${spaceMono.className} uppercase text-lg my-3`}>
-                  Size
-                </h3>
-                <MdOutlineKeyboardArrowDown />
-              </div>
-              <div className="flex flex-col   ">
-                {uniqueProductSize.map((size, index) => (
-                  <button
-                    className={`${spaceMono.className} text-start text-gray-600 hover:text-black cursor-pointer`}
-                    key={index}
-                  >
-                    {size} ({productCountBySize.get(size) ?? 0})
-                  </button>
-                ))}
-              </div>
-            </aside>
-            <div className="w-full lg:w-5/6">
-              <ProductGrid products={products} />
+        <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:gap-8">
+          <aside className="w-full lg:w-1/6 flex flex-col gap-4 mt-8">
+            <div className="flex flex-row items-center justify-between cursor-pointer">
+              <h3 className={`${spaceMono.className} uppercase text-lg`}>
+                Product Type
+              </h3>
+              <MdOutlineKeyboardArrowDown />
             </div>
+            {/* Category div */}
+            <div className="flex flex-col gap-2">
+              {uniqueProductTypes.map((producttype) => (
+                <button
+                  key={producttype}
+                  className={`${spaceMono.className} text-left w-full capitalize cursor-pointer text-gray-600 hover:text-black`}
+                >
+                  {producttype}
+                </button>
+              ))}
+            </div>
+
+            {/* Size div */}
+
+            <div className="flex flex-row items-center justify-between cursor-pointer border-t border-gray-300 mt-5">
+              <h3 className={`${spaceMono.className} uppercase text-lg my-3`}>
+                Size
+              </h3>
+              <MdOutlineKeyboardArrowDown />
+            </div>
+            <div className="flex flex-col   ">
+              {uniqueProductSize.map((size, index) => (
+                <button
+                  className={`${spaceMono.className} text-start text-gray-600 hover:text-black cursor-pointer`}
+                  key={index}
+                >
+                  {size} ({productCountBySize.get(size) ?? 0})
+                </button>
+              ))}
+            </div>
+          </aside>
+          <div className="w-full lg:w-5/6">
+            <ProductGrid products={products} />
           </div>
-        )
+        </div>
       )}
     </div>
   );
