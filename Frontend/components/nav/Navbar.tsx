@@ -113,7 +113,12 @@ const Navbar = () => {
     }
   }, [isLoggedIn, dispatch]);
 
-  const navs = [{ label: "ACCOUNT" }, { label: "SEARCH" }, { label: "CART" }];
+  const accountNavLabel = isLoggedIn ? "ACCOUNT" : "LOGIN";
+  const navs = [
+    { label: accountNavLabel },
+    { label: "SEARCH" },
+    { label: "CART" },
+  ];
 
   const menuItemsOne = [
     { label: "LATEST", href: "/collections/latest" },
@@ -280,11 +285,11 @@ const Navbar = () => {
           <div className="hidden items-center gap-3 lg:gap-5 lg:flex">
             {navs.map((nav, index) => (
               <div key={index}>
-                {nav.label === "ACCOUNT" ? (
+                {nav.label === "ACCOUNT" || nav.label === "LOGIN" ? (
                   <button
                     type="button"
                     onClick={() => {
-                      if (user) {
+                      if (isLoggedIn) {
                         openAccount();
                       } else {
                         router.push("/login");
@@ -292,7 +297,7 @@ const Navbar = () => {
                     }}
                     className={`${spaceMono.className} cursor-pointer text-sm lg:text-base`}
                   >
-                    ACCOUNT
+                    {accountNavLabel}
                   </button>
                 ) : nav.label === "SEARCH" ? (
                   <button
@@ -398,7 +403,7 @@ const Navbar = () => {
           type="button"
           onClick={() => {
             setIsOpenMenubar(false);
-            if (user) {
+            if (isLoggedIn) {
               openAccount();
             } else {
               router.push("/login");
@@ -410,7 +415,7 @@ const Navbar = () => {
               : "pointer-events-none translate-y-3 opacity-0"
           }`}
         >
-          ACCOUNT
+          {isLoggedIn ? "ACCOUNT" : "LOGIN"}
         </button>
 
         <nav className="mt-15 flex flex-col gap-3">

@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductDetailSkeleton } from "@/components/ui/ProductSkeleton";
 import { useGetProductByIdQuery } from "@/feature/redux/product/productApi";
 import BreadCrumb from "./BreadCrumb";
 import ProductDetails from "./ProductDetails";
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export default function ProductClient({ id }: Props) {
-  const { data: product, isLoading } = useGetProductByIdQuery(id);
+  const { data: product, isLoading, isFetching, isSuccess } = useGetProductByIdQuery(id);
+  const showSkeleton = !isSuccess;
 
-  if (isLoading) {
-    return <div>Loading product...</div>;
+  if (showSkeleton) {
+    return <ProductDetailSkeleton />;
   }
 
   if (!product) {
