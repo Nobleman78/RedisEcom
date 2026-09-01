@@ -11,7 +11,12 @@ interface Props {
 }
 
 export default function ProductClient({ id }: Props) {
-  const { data: product, isLoading, isFetching, isSuccess } = useGetProductByIdQuery(id);
+  const {
+    data: product,
+    isLoading,
+    isFetching,
+    isSuccess,
+  } = useGetProductByIdQuery(id);
   const showSkeleton = !isSuccess;
 
   if (showSkeleton) {
