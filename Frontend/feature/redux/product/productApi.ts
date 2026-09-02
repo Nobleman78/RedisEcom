@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Product } from "@/types/product";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface FetchProductsArgs {
   search?: string;
@@ -28,6 +28,9 @@ export type StatusResponse = Product[];
 
 export interface FeatureProductResponse {
   products: Product[];
+}
+export interface SalesProductResponse {
+  products:Product[]
 }
 
 export const productApi = createApi({
@@ -87,6 +90,11 @@ export const productApi = createApi({
       query: () => "/featured",
       providesTags: [{ type: "Products", id: "FEATURED" }],
     }),
+
+    getSaleProducts: builder.query<SalesProductResponse,void>({
+      query:()=>"/sale",
+      providesTags:[{type:"Products", id:"SALE"}]
+    })
   }),
 });
 
@@ -99,6 +107,7 @@ export const {
   useGetProductsByCategoryQuery,
   useGetLatestProductsQuery,
   useGetFeaturedProductsQuery,
+  useGetSaleProductsQuery
 } = productApi;
 
 // Backwards-compatible async helper functions
@@ -188,4 +197,15 @@ export async function getFeaturedProduct(): Promise<FeatureProductResponse> {
     throw new Error(`Failed to fetch featured product : ${res.status} ${text}`);
   }
   return res.json();
+}
+
+export async function getSaleProDuct(){
+  const res = await fetch(`${PRODUCTS_URL}/sale`,{
+    credentials:"include",
+  })
+  if(!res.ok){
+    const text = await res.text().catch(()=>"")
+    throw new Error(`Failed to fetch featured product : ${res.status} ${text}`)
+  }
+  return res.json()
 }
