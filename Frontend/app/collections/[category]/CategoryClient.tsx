@@ -4,6 +4,7 @@ import {
   useGetFeaturedProductsQuery,
   useGetLatestProductsQuery,
   useGetProductsByCategoryQuery,
+  useGetSaleProductsQuery,
 } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import {
@@ -31,7 +32,8 @@ const CategoryClient = ({ category }: Props) => {
 
   const isFeatured = category.toLowerCase() === "featured";
   const isLatest = category.toLowerCase() === "latest";
-  const isRegularCategory = !isFeatured && !isLatest;
+  const isSales = category.toLowerCase() === "sale";
+  const isRegularCategory = !isFeatured && !isLatest && !isSales;
 
   const featuredQuery = useGetFeaturedProductsQuery(undefined, {
     skip: !isFeatured,
@@ -42,6 +44,9 @@ const CategoryClient = ({ category }: Props) => {
   const categoryQuery = useGetProductsByCategoryQuery(category, {
     skip: !isRegularCategory,
   });
+  const salesQuery = useGetSaleProductsQuery(undefined, {
+    skip: !isSales,
+  });
 
   const products = useMemo(() => {
     if (isFeatured) {
@@ -50,18 +55,24 @@ const CategoryClient = ({ category }: Props) => {
     if (isLatest) {
       return latestQuery.data ?? [];
     }
+    if (isSales) {
+      return salesQuery.data?.products ?? [];
+    }
     return categoryQuery.data?.products ?? [];
   }, [
     isFeatured,
     isLatest,
+    isSales,
     featuredQuery.data,
     latestQuery.data,
+    salesQuery.data,
     categoryQuery.data,
   ]);
 
   const isLoading =
     (isFeatured && !featuredQuery.isSuccess) ||
     (isLatest && !latestQuery.isSuccess) ||
+    (isSales && !salesQuery.isSuccess) ||
     (isRegularCategory && !categoryQuery.isSuccess);
 
   const availableProductTypes = useMemo(
@@ -84,11 +95,15 @@ const CategoryClient = ({ category }: Props) => {
 
   const slogan = isFeatured
     ? "Discover our handpicked featured items!"
-    : "Find the best deals on our products!";
+    : isSales
+      ? "Check out our exclusive sales!"
+      : "Find the best deals on our products!";
 
   const displayCategory = isFeatured
     ? "Featured Products"
-    : category.charAt(0).toUpperCase() + category.slice(1);
+    : isSales
+      ? "Sale"
+      : category.charAt(0).toUpperCase() + category.slice(1);
 
   return (
     <div className="mt-32">
