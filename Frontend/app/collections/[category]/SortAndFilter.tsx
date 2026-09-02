@@ -230,7 +230,9 @@ export default function SortAndFilter({
                     </div>
                   ))
                 ) : (
-                  <p className="py-1 text-sm text-gray-500">
+                  <p
+                    className={`${spaceMono.className} py-1 text-sm text-gray-500`}
+                  >
                     No product types available
                   </p>
                 )}
@@ -285,7 +287,9 @@ export default function SortAndFilter({
                     </div>
                   ))
                 ) : (
-                  <p className="py-1 text-sm text-gray-500">
+                  <p
+                    className={`${spaceMono.className} py-1 text-sm text-gray-500`}
+                  >
                     No sizes available
                   </p>
                 )}
