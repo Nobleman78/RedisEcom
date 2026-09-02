@@ -100,7 +100,7 @@ const ProductDetails = ({
           {size.length > 0 && (
             <div>
               <h3 className="mb-5">Size:</h3>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {size.map((item) => {
                   const isActive = isSelectedSize === item;
 
@@ -109,7 +109,7 @@ const ProductDetails = ({
                       key={item}
                       type="button"
                       onClick={() => setUserSelectedSize(item)}
-                      className={`px-5 py-1 border  cursor-pointer ${
+                      className={`px-5 py-1 border  cursor-pointer  ${
                         isActive ? "border-black " : "border-gray-300 "
                       }`}
                     >
