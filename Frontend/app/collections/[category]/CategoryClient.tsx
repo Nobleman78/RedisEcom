@@ -12,6 +12,7 @@ import {
   getUniqueValues,
   sortProducts,
 } from "@/lib/productCatalog";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import Breadcrumb from "./BreadCrumb";
 import ProductGrid from "./ProductGrid";
@@ -22,13 +23,33 @@ interface Props {
 }
 
 const CategoryClient = ({ category }: Props) => {
-  const [sortValue, setSortValue] = useState("most-relevant");
-  const [draftProductTypes, setDraftProductTypes] = useState<string[]>([]);
-  const [draftSizes, setDraftSizes] = useState<string[]>([]);
-  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>(
-    [],
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Compute initial filter state from URL params
+  const initialFilters = useMemo(() => {
+    const sortParam = searchParams.get("sort") || "most-relevant";
+    const typeParam = searchParams.get("type");
+    const sizeParam = searchParams.get("size");
+
+    return {
+      sort: sortParam,
+      types: typeParam ? typeParam.split(",") : [],
+      sizes: sizeParam ? sizeParam.split(",") : [],
+    };
+  }, [searchParams]);
+
+  const [sortValue, setSortValue] = useState(initialFilters.sort);
+  const [draftProductTypes, setDraftProductTypes] = useState<string[]>(
+    initialFilters.types,
   );
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [draftSizes, setDraftSizes] = useState<string[]>(initialFilters.sizes);
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>(
+    initialFilters.types,
+  );
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(
+    initialFilters.sizes,
+  );
 
   const isFeatured = category.toLowerCase() === "featured";
   const isLatest = category.toLowerCase() === "latest";
@@ -105,6 +126,36 @@ const CategoryClient = ({ category }: Props) => {
       ? "Sale"
       : category.charAt(0).toUpperCase() + category.slice(1);
 
+  // Helper function to update URL with current filters
+  const updateUrlParams = (sort: string, types: string[], sizes: string[]) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (sort && sort !== "most-relevant") {
+      params.set("sort", sort);
+    } else {
+      params.delete("sort");
+    }
+
+    if (types.length > 0) {
+      params.set("type", types.join(","));
+    } else {
+      params.delete("type");
+    }
+
+    if (sizes.length > 0) {
+      params.set("size", sizes.join(","));
+    } else {
+      params.delete("size");
+    }
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `/collections/${category}?${queryString}`
+      : `/collections/${category}`;
+
+    router.push(url);
+  };
+
   return (
     <div className="mt-32">
       <Breadcrumb displayCategory={displayCategory} />
@@ -125,10 +176,14 @@ const CategoryClient = ({ category }: Props) => {
         sizes={availableSizes}
         selectedProductTypes={draftProductTypes}
         selectedSizes={draftSizes}
-        onSortChange={setSortValue}
+        onSortChange={(value) => {
+          setSortValue(value);
+          updateUrlParams(value, draftProductTypes, draftSizes);
+        }}
         onApplyFilters={() => {
           setSelectedProductTypes(draftProductTypes);
           setSelectedSizes(draftSizes);
+          updateUrlParams(sortValue, draftProductTypes, draftSizes);
         }}
         onToggleProductType={(value) =>
           setDraftProductTypes((prev) =>
