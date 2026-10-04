@@ -141,7 +141,7 @@ const Navbar = () => {
       label: "SALE",
       href: "/collections/sale",
     },
-    { label: "BLOG", href: "/blog" },
+
     { label: "CONTACT", href: "/contact" },
   ];
   const [isOpenMenubar, setIsOpenMenubar] = useState(false);
