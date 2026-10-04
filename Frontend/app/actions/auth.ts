@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
+
 
 
 export async function loginAction(formData: FormData) {
@@ -18,7 +20,7 @@ export async function loginAction(formData: FormData) {
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -83,7 +85,7 @@ export async function signupAction(formData: FormData): Promise<void> {
   let setCookieHeader: string[] = [];
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/signup", {
+    const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -140,7 +142,7 @@ export async function logoutAction(): Promise<void> {
   const supabase = await createClient();
 
   try {
-    await fetch("http://localhost:5000/api/auth/logout", {
+    await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

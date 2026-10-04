@@ -2,8 +2,8 @@
 import { addToCart } from "@/feature/redux/cart/cartApi";
 import { useAppDispatch } from "@/feature/redux/store";
 import { spaceMono } from "@/fonts/Fonts";
-import { terms } from "@/public/terms/terms";
 import useCartGuard from "@/hook/useCartGuard";
+import { terms } from "@/public/terms/terms";
 import Image from "next/image";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -100,7 +100,7 @@ const ProductDetails = ({
           {size.length > 0 && (
             <div>
               <h3 className="mb-5">Size:</h3>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {size.map((item) => {
                   const isActive = isSelectedSize === item;
 
@@ -109,7 +109,7 @@ const ProductDetails = ({
                       key={item}
                       type="button"
                       onClick={() => setUserSelectedSize(item)}
-                      className={`px-5 py-1 border  cursor-pointer ${
+                      className={`px-5 py-1 border  cursor-pointer  ${
                         isActive ? "border-black " : "border-gray-300 "
                       }`}
                     >
@@ -153,12 +153,12 @@ const ProductDetails = ({
           {/* Shipping and return tearm and conditions */}
           <div>
             <div className="border-t mt-10 border-b">
-              <div className="flex items-center justify-between">
+              <div
+                onClick={() => handleOpenTermsForShippingAndTax("shipping")}
+                className="flex items-center justify-between cursor-pointer"
+              >
                 <h2 className="uppercase py-2">Shipping & Returns</h2>
-                <button
-                  onClick={() => handleOpenTermsForShippingAndTax("shipping")}
-                  className="cursor-pointer text-xl"
-                >
+                <button className="cursor-pointer text-xl">
                   {openTerm === "shipping" ? "-" : "+"}
                 </button>
               </div>
@@ -170,12 +170,12 @@ const ProductDetails = ({
               )}
             </div>
             <div>
-              <div className="flex items-center justify-between">
+              <div
+                onClick={() => handleOpenTermsForShippingAndTax("tax")}
+                className="flex items-center justify-between cursor-pointer"
+              >
                 <h2 className="uppercase py-2">Tax</h2>
-                <button
-                  onClick={() => handleOpenTermsForShippingAndTax("tax")}
-                  className="cursor-pointer text-xl"
-                >
+                <button className="cursor-pointer text-xl">
                   {openTerm === "tax" ? "-" : "+"}
                 </button>
               </div>

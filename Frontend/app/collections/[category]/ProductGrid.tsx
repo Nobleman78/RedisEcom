@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function ProductGrid({ products }: Props) {
-  return (
+  return products.length > 0 ? (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mx-4 md:mx-10 my-10 gap-4 md:gap-10">
       {products.map((product) => (
         <Link
@@ -31,11 +31,16 @@ export default function ProductGrid({ products }: Props) {
 
           <div className="mt-2">
             <h2>{product.name}</h2>
-
             <h3>${product.price.toFixed(2)}</h3>
           </div>
         </Link>
       ))}
     </section>
+  ) : (
+    <div
+      className={`flex items-center justify-center min-h-[50vh] ${spaceMono.className}`}
+    >
+      <p className="text-xl">No products found!</p>
+    </div>
   );
 }

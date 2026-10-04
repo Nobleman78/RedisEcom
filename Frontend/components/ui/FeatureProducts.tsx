@@ -1,22 +1,29 @@
 "use client";
 
-import {
-  fetchFeaturedProduct,
-  selectFeaturedProducts,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { ProductGridSkeleton } from "@/components/ui/ProductSkeleton";
+import { useGetFeaturedProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
 
 const FeatureProducts = () => {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectFeaturedProducts);
+  const { data, isLoading, isFetching, isSuccess } =
+    useGetFeaturedProductsQuery();
+  const products = data?.products ?? [];
+  const showSkeleton = !isSuccess;
 
-  useEffect(() => {
-    dispatch(fetchFeaturedProduct());
-  }, [dispatch]);
+  if (showSkeleton || isLoading || isFetching) {
+    return (
+      <div className="mt-12 sm:mt-16 md:mt-20">
+        <h2
+          className={`${spaceMono.className} text-center text-xl uppercase text-[#1c1c1c] sm:text-2xl md:text-3xl`}
+        >
+          feature products
+        </h2>
+        <ProductGridSkeleton count={3} />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-12 sm:mt-16 md:mt-20">

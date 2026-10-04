@@ -1,6 +1,6 @@
 import { Product } from "@/types/product";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getCategoriesApi, getFeaturedProduct, getLatestProduct, getProductByCategory, getProductByIdApi, searchProducts } from "./productApi";
+import { getCategoriesApi, getFeaturedProduct, getLatestProduct, getProductByCategory, getProductByIdApi, getSaleProDuct, searchProducts } from "./productApi";
 
 export interface FetchProductsArgs {
   search?: string;
@@ -29,6 +29,9 @@ export type StatusResponse = Product[];
 
 export interface FeatureProductResponse {
   products: Product[];
+}
+export interface SalesProductResponse{
+  products: Product[]
 }
 // fetch search result 
 export const fetchProducts = createAsyncThunk<Awaited<ReturnType<typeof searchProducts>>,FetchProductsArgs,{ rejectValue: string }>(
@@ -108,6 +111,20 @@ export const fetchFeaturedProduct = createAsyncThunk<FeatureProductResponse, voi
   }
 )
 
+// fetch sales product 
+export const fetchSalesProduct = createAsyncThunk<SalesProductResponse,void,{ rejectValue: string }
+>(
+  "products/fetchBySale",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getSaleProDuct();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 export interface ProductState {
   items: Product[];
   singleProduct: Product | null;
@@ -120,6 +137,7 @@ export interface ProductState {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   featuredItems: Product[];
+  salesItems : Product[];
 }
 
 const initialState: ProductState = {
@@ -134,8 +152,9 @@ const initialState: ProductState = {
   status: "idle",
   error: null,
   featuredItems: [],
+  salesItems:[]
 };
-
+// sdde
 const productSlice = createSlice({
   name: "products",
   initialState,
@@ -244,6 +263,18 @@ const productSlice = createSlice({
         state.status = "failed";
         state.error = action.payload ?? "Failed to fetch featured products";
       })
+      .addCase(fetchSalesProduct.pending, (state)=>{
+        state.status="loading";
+        state.error=null
+      })
+      .addCase(fetchSalesProduct.fulfilled, (state,action)=>{
+        state.status = "succeeded";
+        state.salesItems= action.payload.products ?? []
+      })
+      .addCase(fetchSalesProduct.rejected, (state,action)=>{
+        state.status ="failed";
+        state.error = action.payload ?? "Failed to fetch sales data"
+      })
       
   },
 });
@@ -261,6 +292,8 @@ export const selectProductByStatus = (state: { products: ProductState }) =>
   state.products.items;
 export const selectFeaturedProducts = (state: { products: ProductState }) =>
   state.products.featuredItems;
+
+export const selectSalesProducts = (state:{products: ProductState})=> state.products.salesItems
 export const selectPagination = (state: { products: ProductState }) => ({
   page: state.products.page,
   totalPages: state.products.totalPages,

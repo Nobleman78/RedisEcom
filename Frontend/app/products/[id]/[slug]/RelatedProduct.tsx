@@ -1,27 +1,22 @@
 "use client";
-import {
-  fetchProducts,
-  selectProducts,
-} from "@/feature/redux/product/productSlice";
-import { useAppDispatch, useAppSelector } from "@/feature/redux/store";
+import { RelatedProductsSkeleton } from "@/components/ui/ProductSkeleton";
+import { useGetProductsQuery } from "@/feature/redux/product/productApi";
 import { spaceMono } from "@/fonts/Fonts";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 interface Props {
   category: string;
 }
 
 const RelatedProduct = ({ category }: Props) => {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectProducts);
-
-  useEffect(() => {
-    if (category) {
-      dispatch(fetchProducts({ category }));
-    }
-  }, [category, dispatch]);
+  const { data, isLoading, isFetching, isSuccess } = useGetProductsQuery(
+    { category },
+    { skip: !category },
+  );
+  const products = data?.products ?? [];
+  const showSkeleton = !isSuccess;
 
   const ITEMS_PER_PAGE = 4;
   const [startIndex, setStartIndex] = useState(0);
@@ -40,6 +35,10 @@ const RelatedProduct = ({ category }: Props) => {
   };
 
   const pageIndex = startIndex / ITEMS_PER_PAGE;
+
+  if (showSkeleton) {
+    return <RelatedProductsSkeleton count={4} />;
+  }
 
   return (
     <div className="mt-10 sm:mt-12 md:mt-16">

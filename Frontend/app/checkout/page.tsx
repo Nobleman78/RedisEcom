@@ -17,7 +17,7 @@ const CheckoutPage = () => {
   }, [dispatch]);
 
   return (
-    <main className="min-h-screen bg-[#f4f3ef] px-5 pb-16 pt-28 text-black sm:px-8 sm:pt-32 lg:px-16">
+    <main className="min-h-screen  px-5 pb-16 pt-28 mt-20 text-black sm:px-8 sm:pt-32 lg:px-16">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 flex items-end justify-between border-b border-gray-300 pb-5">
           <div>
@@ -89,7 +89,7 @@ const CheckoutPage = () => {
             </div>
           </section>
 
-          <aside className="h-fit border border-gray-50 bg-white p-6 sm:p-8">
+          <aside className="h-fit bg-black border border-gray-50 text-white p-6 sm:p-8">
             <h2
               className={`${spaceMono.className} mb-8 text-sm uppercase tracking-widest`}
             >
@@ -102,7 +102,7 @@ const CheckoutPage = () => {
                 <span>Subtotal</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-gray-500">
+              <div className="flex justify-between ">
                 <span>Shipping</span>
                 <span>${shipping.toFixed(2)}</span>
               </div>
@@ -118,12 +118,12 @@ const CheckoutPage = () => {
             </div>
             <button
               type="button"
-              className={`${spaceMono.className} cursor-pointer w-full bg-black px-5 py-4 text-xs uppercase tracking-[0.18em] text-white transition hover:bg-gray-700`}
+              className={`${spaceMono.className} cursor-pointer w-full bg-white px-5 py-4 text-xs uppercase tracking-[0.18em]  text-black`}
             >
               Pay with Stripe
             </button>
             <p
-              className={`${spaceMono.className} mt-5 text-center text-[10px] uppercase leading-relaxed text-gray-500`}
+              className={`${spaceMono.className} mt-5 text-center text-[10px] uppercase leading-relaxed `}
             >
               Payment details will be collected securely.
             </p>

@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       }
     ]
   },
+  // production url added
+  
   async rewrites() {
     return [
       {
